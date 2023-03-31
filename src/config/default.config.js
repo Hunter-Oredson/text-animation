@@ -2,7 +2,16 @@ export const OUTPUTS = {
   TEXT: "Text",
   OBJECT: "Object in a Grid",
 };
-export const animations = ["bounce", "blink", "jello", "wobble"];
+export const animations = [
+  "bounce",
+  "blink",
+  "jello",
+  "wobble",
+  "bounce-off",
+  "blink-off",
+  "jello-off",
+  "wobble-off",
+];
 export const outputs = ["Text"];
 
 // INPUT for grid -> text: We can think of 97% x %6% as 97% groups of %5%  ⚽️.; animation: bounce; animation_duration: 700; animation_pause: 200; text_color: #FFFFFF; height: 308; width: 350; background_color: #1F2937
@@ -22,5 +31,9 @@ export const ANIMATION = {
     BLINK: "blink",
     JELLO: "jello",
     WOBBLE: "wobble",
+    BOUNCEOFF: "bounce-off",
+    BLINKOFF: "blink-off",
+    JELLOOFF: "jello-off",
+    WOBBLEOFF: "wobble-off",
   },
 };

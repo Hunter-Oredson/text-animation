@@ -272,7 +272,6 @@ import {
   outputs,
 } from "./config/default.config";
 import { generateDownloadable } from "./downloader";
-import { debounce } from "./helper";
 
 const formData = ref({
   isImportFromCsv: false,
@@ -471,7 +470,7 @@ async function animateToQueue(items) {
         for (let index = 0; index < elements.length; index++) {
           const element = elements[index];
           if (rowIndex === 0 && index === 0) {
-            toAnimate(element, item);
+            element.className = "";
           } else {
             await makePromise(() => {
               toAnimate(element, item);
@@ -557,6 +556,7 @@ function getResults(item, rowIndex) {
 }
 
 function toAnimate(element, item) {
+  console.log(element);
   let elementClasses = ["animate", "animate-" + item?.animation?.toLowerCase()];
   element.className = elementClasses.join(" ");
 }

@@ -118,7 +118,7 @@
               :class="{ 'btn-selected': formData.animation === item }"
             >
               <input
-                @change="handleFormUpdate"
+                @click="handleClick"
                 type="radio"
                 name="animation"
                 class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -312,6 +312,11 @@ function handleFormUpdate() {
   GenerateAnimation();
 }
 
+function handleClick(e) {
+  // styleValue = e.target.value;
+  GenerateAnimation(null, e.target.value);
+}
+
 function handleInputChange() {
   setTimeout(() => {
     const multilines = formData.value.input
@@ -344,7 +349,7 @@ function parseText(option) {
  *
  * @param {Array} csvData
  */
-async function makeAnimation(csvData) {
+async function makeAnimation(csvData, useButtonAnimation) {
   downloadReady.value = false;
   formData.value.result = "";
   await makePromise(async () => {
@@ -360,16 +365,17 @@ async function makeAnimation(csvData) {
         : OUTPUTS.TEXT;
       const item = {
         input: row.text,
-        animation: row.animation ? row.animation : ANIMATION.STYLE.BOUNCE,
+        animation:
+          useButtonAnimation ?? row?.animation ?? ANIMATION.STYLE.BOUNCE,
         animation_type: rowOutput,
-        animation_duration: row.animation_duration
+        animation_duration: row?.animation_duration
           ? parseInt(row.animation_duration)
           : ANIMATION.DURATION,
-        animation_pause: row.animation_pause
+        animation_pause: row?.animation_pause
           ? parseInt(row.animation_pause)
           : ANIMATION.PAUSE,
         result: "",
-        text_color: row.text_color,
+        text_color: row?.text_color ?? "#FFFFFF",
         colors: [row.param_1, row.param_2],
       };
       item.result = getResults(item, rowIndex);
@@ -379,7 +385,7 @@ async function makeAnimation(csvData) {
     formData.value.result = itemsHtml;
     await animateToQueue(items);
   }, 50);
-  updateInput(csvData);
+  updateInput(csvData, useButtonAnimation);
 }
 
 function parseOptions(input = formData.value.input) {
@@ -414,7 +420,7 @@ function parseOptions(input = formData.value.input) {
   return options;
 }
 
-function updateInput(data) {
+function updateInput(data, useButtonAnimation) {
   setTimeout(() => {
     const formDataValues = { ...formData._rawValue };
     let options =
@@ -426,18 +432,12 @@ function updateInput(data) {
     let text = "";
 
     options.forEach((option) => {
-      // console.log(
-      //   option?.text,
-      //   option?.height,
-      //   option?.width,
-      //   option?.animation,
-      //   option?.background_color
-      // );
       option["text"] =
         option?.text ?? option.input.split(";")[0].split(": ")[1];
       option["height"] = option?.height ?? option.preview_box?.height ?? 350;
       option["width"] = option?.width ?? option.preview_box?.width ?? 250;
-      option["animation"] = option?.animation ?? option.animation;
+      option["animation"] =
+        useButtonAnimation ?? option?.animation ?? ANIMATION.STYLE.BOUNCE;
       option["background_color"] =
         option?.background_color ?? option.preview_box?.bg_color ?? "white";
 
@@ -477,7 +477,7 @@ async function animateToQueue(items) {
         }
         for (let index = 0; index < elements.length; index++) {
           const element = elements[index];
-          if (rowIndex === 0 && index === 0) {
+          if (index === 0) {
             element.className = "";
           } else {
             await makePromise(() => {
@@ -612,7 +612,7 @@ function setCsvRowData(csvData) {
   csvRowDataKeys.value = csvData ? Object.keys(csvData[0]) : [];
 }
 
-async function GenerateAnimation(options) {
+async function GenerateAnimation(options, useButtonAnimation) {
   if (formData.value.isImportFromCsv) {
     return await makeAnimation(csvRowData.value);
   }
@@ -623,7 +623,10 @@ async function GenerateAnimation(options) {
       .filter((line) => line)
       .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
 
-    return await makeAnimation(multilines.map((line) => parseOptions(line)));
+    return await makeAnimation(
+      multilines.map((line) => parseOptions(line)),
+      useButtonAnimation
+    );
   }
   return await makeAnimation(options);
 }

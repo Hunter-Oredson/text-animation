@@ -467,6 +467,14 @@ async function animateToQueue(items) {
         const elements = Array.from(
           previewElement.value.querySelectorAll(`.row-${rowIndex} .hidden`)
         );
+        if (
+          item.animation.includes("off") ||
+          item.animation.toLowerCase() === "shrink"
+        ) {
+          elements.forEach((element) => {
+            element.className = "";
+          });
+        }
         for (let index = 0; index < elements.length; index++) {
           const element = elements[index];
           if (rowIndex === 0 && index === 0) {
@@ -556,7 +564,6 @@ function getResults(item, rowIndex) {
 }
 
 function toAnimate(element, item) {
-  console.log(element);
   let elementClasses = ["animate", "animate-" + item?.animation?.toLowerCase()];
   element.className = elementClasses.join(" ");
 }

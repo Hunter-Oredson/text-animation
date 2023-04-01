@@ -194,20 +194,11 @@
 
           <button
             id="generate-btn"
-            v-show="!downloadReady"
             class="mt-3 ml-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
             @click="generateGif"
           >
             Generate GIF
           </button>
-
-          <a
-            id="download-btn"
-            v-show="downloadReady"
-            class="mt-3 ml-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
-          >
-            Download GIF
-          </a>
         </div>
         <div>
           <h3 class="group-title">Tips</h3>
@@ -434,8 +425,14 @@ function updateInput(data, useButtonAnimation) {
     options.forEach((option) => {
       option["text"] =
         option?.text ?? option.input.split(";")[0].split(": ")[1];
-      option["height"] = option?.height ?? option.preview_box?.height ?? 350;
-      option["width"] = option?.width ?? option.preview_box?.width ?? 250;
+      option["height"] =
+        option?.height ??
+        option.preview_box?.height ??
+        ANIMATION.PREVIEW_BOX.HEIGHT;
+      option["width"] =
+        option?.width ??
+        option.preview_box?.width ??
+        ANIMATION.PREVIEW_BOX.WIDTH;
       option["animation"] =
         useButtonAnimation ?? option?.animation ?? ANIMATION.STYLE.BOUNCE;
       option["background_color"] =
@@ -465,7 +462,7 @@ async function animateToQueue(items) {
         const item = items[rowIndex];
         const animation_pause = item.animation_pause;
         const elements = Array.from(
-          previewElement.value.querySelectorAll(`.row-${rowIndex} .hidden`)
+          previewElement.value.querySelectorAll(`.row-${rowIndex} .invisible`)
         );
         if (
           item.animation.includes("off") ||
@@ -526,14 +523,14 @@ function getResults(item, rowIndex) {
       number_1 = parseInt(m[1].replaceAll("%", ""));
       str = str.replaceAll(
         m[1],
-        `<span class="hidden" style="${number_1_style}">${number_1}</span>`
+        `<span class="invisible" style="${number_1_style}">${number_1}</span>`
       );
     }
     if (m[2]) {
       number_2 = parseInt(m[2].replaceAll("%", ""));
       str = str.replaceAll(
         m[2],
-        `<span class="hidden" style="${number_2_style}">${number_2}</span>`
+        `<span class="invisible" style="${number_2_style}">${number_2}</span>`
       );
     }
   }
@@ -546,7 +543,7 @@ function getResults(item, rowIndex) {
         regex_within_percentage.lastIndex++;
       str = str.replaceAll(
         m[0],
-        `<span class="hidden" style="${number_2_style}">${m[1]}</span>`
+        `<span class="invisible" style="${number_2_style}">${m[1]}</span>`
       );
     }
   }
@@ -554,13 +551,13 @@ function getResults(item, rowIndex) {
     str = "";
     [...Array(number_1)].forEach(() => {
       [...Array(number_2)].forEach(() => {
-        str += `<span class="hidden" style="animation-duration: ${item.animation_duration}ms;">${type}</span>`;
+        str += `<span class="invisible" style="animation-duration: ${item.animation_duration}ms;">${type}</span>`;
       });
       str += "</br>";
     });
   }
 
-  return `<div class="row-${rowIndex}" style="color: ${item.text_color}"><div class="hidden">${str}</div></div>`;
+  return `<div class="row-${rowIndex}" style="color: ${item.text_color}"><div class="invisible">${str}</div></div>`;
 }
 
 function toAnimate(element, item) {
@@ -632,15 +629,21 @@ async function GenerateAnimation(options, useButtonAnimation) {
 }
 
 async function generateGif() {
+  const numberOfAnimations = (formData.value.input.split("%").length - 1) / 2;
+  const gifLength =
+    (+formData.value.animation_duration > +formData.value.animation_pause
+      ? +formData.value.animation_duration
+      : +formData.value.animation_pause) *
+      numberOfAnimations +
+    +formData.value.animation_pause;
   await GenerateAnimation();
-  setTimeout(async () => {
-    const downloadLink = document.getElementById("generate-btn");
-    downloadLink.classList.add("disabled");
-    downloadLink.innerText = "Generating GIF...";
-    await generateDownloadable(formData.value.animation_duration / 1000);
-    downloadReady.value = true;
-    downloadLink.classList.remove("disabled");
-    downloadLink.innerText = "Generate GIF";
-  }, 500);
+  const downloadLink = document.getElementById("generate-btn");
+  downloadLink.classList.add("disabled");
+  downloadLink.innerText = "Generating GIF...";
+  console.log(gifLength, numberOfAnimations);
+  await generateDownloadable(gifLength);
+  downloadReady.value = true;
+  downloadLink.classList.remove("disabled");
+  downloadLink.innerText = "Generate GIF";
 }
 </script>

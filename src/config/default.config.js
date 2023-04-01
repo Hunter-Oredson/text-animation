@@ -32,8 +32,8 @@ export const ANIMATION = {
   PAUSE: 200,
   PREVIEW_BOX: {
     BG_COLOR: "#1F2937",
-    HEIGHT: 250,
-    WIDTH: 350,
+    HEIGHT: 125,
+    WIDTH: 375,
   },
   TEXT_COLOR: "#FFFFFF",
   STYLE: {

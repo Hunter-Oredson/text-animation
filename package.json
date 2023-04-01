@@ -12,8 +12,11 @@
     "publish": "vite build && gh-pages -d dist"
   },
   "dependencies": {
+    "dom-vcr": "^0.3.3",
     "gh-pages": "^5.0.0",
     "html2canvas": "^1.4.1",
+    "modern-gif": "^0.1.1",
+    "mp4box": "^0.5.2",
     "papaparse": "^5.3.2",
     "vue": "^3.2.45"
   },

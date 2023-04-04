@@ -169,17 +169,20 @@
       </div>
       <div>
         <div
-          class="bg-container rounded-md p-6 md:h-full"
+          class="bg-container rounded-md p-1 md:h-full text-center flex items-center justify-center"
           id="previewElement"
           :style="{
             backgroundColor: formData.preview_box.bg_color,
-            height: formData.preview_box.height + 'px',
-            width: formData.preview_box.width + 'px',
+            height: formData?.preview_box?.height
+              ? formData?.preview_box?.height + 'px'
+              : 'fit-content',
+            width: formData?.preview_box?.width
+              ? formData?.preview_box?.width + 'px'
+              : 'fit-content',
           }"
         >
           <div
             ref="previewElement"
-            class="mt-6"
             style="white-space: pre-wrap"
             v-html="formData.result"
           ></div>

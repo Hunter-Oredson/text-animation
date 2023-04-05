@@ -55,7 +55,7 @@
               <div class="cp_wrapper">
                 <input
                   type="color"
-                  @input="handleFormUpdate"
+                  @blur="handleFormUpdate"
                   name="text_color"
                   class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   v-model="formData.text_color"
@@ -70,26 +70,26 @@
               <label class="block mt-3" style="max-width: 45%">
                 <span class="block">Width (px):</span>
                 <input
-                  @keyup="handleFormUpdate"
+                  @change="handleFormUpdate"
                   type="number"
-                  name="box_width"
+                  name="width"
                   class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   style="max-width: 100%"
                   v-model="formData.preview_box.width"
-                  placeholder="Width"
+                  placeholder="Auto"
                 />
               </label>
               <span class="block mt-11 ml-2 mr-2">X</span>
               <label class="block mt-3" style="max-width: 45%">
                 <span class="block">Height (px):</span>
                 <input
-                  @keyup="handleFormUpdate"
+                  @change="handleFormUpdate"
                   type="number"
-                  name="box_height"
+                  name="height"
                   class="rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   style="max-width: 100%"
                   v-model="formData.preview_box.height"
-                  placeholder="Height"
+                  placeholder="Auto"
                 />
               </label>
             </div>
@@ -99,9 +99,9 @@
               <span>Background Color:</span>
               <div class="cp_wrapper">
                 <input
-                  @input="handleFormUpdate"
+                  @blur="handleFormUpdate"
                   type="color"
-                  name="box_bg_color"
+                  name="background_color"
                   class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   v-model="formData.preview_box.bg_color"
                 />
@@ -118,7 +118,7 @@
               :class="{ 'btn-selected': formData.animation === item }"
             >
               <input
-                @click="handleClick"
+                @click="handleFormUpdate"
                 type="radio"
                 name="animation"
                 class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -132,8 +132,9 @@
             <label class="block mt-4">
               <span class="block">Animation Duration (ms):</span>
               <input
-                @keyup="handleFormUpdate"
+                @blur="handleFormUpdate"
                 type="number"
+                name="animation_duration"
                 step="50"
                 class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 v-model="formData.animation_duration"
@@ -144,8 +145,9 @@
             <label class="block mt-4">
               <span class="block">Animation Pause (ms):</span>
               <input
-                @keyup="handleFormUpdate"
+                @blur="handleFormUpdate"
                 type="number"
+                name="animation_pause"
                 step="50"
                 class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 v-model="formData.animation_pause"
@@ -173,6 +175,7 @@
           id="previewElement"
           :style="{
             backgroundColor: formData.preview_box.bg_color,
+            color: formData.text_color,
             height: formData?.preview_box?.height
               ? formData?.preview_box?.height + 'px'
               : 'fit-content',
@@ -302,13 +305,8 @@ function initiateApp() {
   GenerateAnimation();
 }
 
-function handleFormUpdate() {
-  GenerateAnimation();
-}
-
-function handleClick(e) {
-  // styleValue = e.target.value;
-  GenerateAnimation(null, e.target.value);
+function handleFormUpdate(e) {
+  GenerateAnimation(null, e.target);
 }
 
 function handleInputChange() {
@@ -343,9 +341,12 @@ function parseText(option) {
  *
  * @param {Array} csvData
  */
-async function makeAnimation(csvData, useButtonAnimation) {
+async function makeAnimation(csvData, eventTarget) {
   downloadReady.value = false;
   formData.value.result = "";
+  const eventName = eventTarget?.name;
+  const eventValue = eventTarget?.value;
+
   await makePromise(async () => {
     const OUTPUTS_OBJECT = OUTPUTS.OBJECT.split(" ")[0]?.toLowerCase();
     const items = [];
@@ -358,19 +359,20 @@ async function makeAnimation(csvData, useButtonAnimation) {
         ? OUTPUTS.OBJECT
         : OUTPUTS.TEXT;
       const item = {
-        input: row.text,
-        animation:
-          useButtonAnimation ?? row?.animation ?? ANIMATION.STYLE.BOUNCE,
+        input: row.text + " ",
+        animation: row?.animation ?? ANIMATION.STYLE.BOUNCE,
         animation_type: rowOutput,
         animation_duration: row?.animation_duration
-          ? parseInt(row.animation_duration)
+          ? +row.animation_duration
           : ANIMATION.DURATION,
         animation_pause: row?.animation_pause
-          ? parseInt(row.animation_pause)
+          ? +row.animation_pause
           : ANIMATION.PAUSE,
         result: "",
         text_color: row?.text_color ?? "#FFFFFF",
+        background_color: row?.background_color ?? "#FFFFFF",
         colors: [row.param_1, row.param_2],
+        [eventName]: isNaN(+eventValue) ? eventValue : +eventValue,
       };
       item.result = getResults(item, rowIndex);
       itemsHtml += item.result;
@@ -379,7 +381,7 @@ async function makeAnimation(csvData, useButtonAnimation) {
     formData.value.result = itemsHtml;
     await animateToQueue(items);
   }, 50);
-  updateInput(csvData, useButtonAnimation);
+  updateInput(csvData, { name: eventName, value: eventValue }); // sending object like this because state gets messed up for some reason if we just pass in the eventTarget
 }
 
 function parseOptions(input = formData.value.input) {
@@ -393,28 +395,10 @@ function parseOptions(input = formData.value.input) {
       return acc;
     }, {});
 
-  // if(options.text) formData.value.text = options.text
-  if (options.animation != formData.value.animation)
-    formData.value.animation = options.animation;
-  if (options.animation_duration != formData.value.animation_duration)
-    formData.value.animation_duration = options.animation_duration;
-  if (options.animation_pause != formData.value.animation_pause)
-    formData.value.animation_pause = options.animation_pause;
-  if (options.background_color != formData.value.preview_box.bg_color)
-    formData.value.preview_box.bg_color = options.background_color;
-  if (options.text_color != formData.value.text_color)
-    formData.value.text_color = options.text_color;
-  if (options.height != formData.value.preview_box.height)
-    formData.value.preview_box.height = options.height;
-  if (options.width != formData.value.preview_box.width)
-    formData.value.preview_box.width = options.width;
-  if (options.animation_type != formData.value.animation_type)
-    formData.value.animation_type = options.animation_type;
-
   return options;
 }
 
-function updateInput(data, useButtonAnimation) {
+function updateInput(data, eventTarget) {
   setTimeout(() => {
     const formDataValues = { ...formData._rawValue };
     let options =
@@ -424,31 +408,44 @@ function updateInput(data, useButtonAnimation) {
         return acc;
       }, {});
     let text = "";
+    const eventName = eventTarget?.name;
+    const eventValue = eventTarget?.value;
+    const allowedOptions = [
+      "text",
+      "animation_type",
+      "text_color",
+      "background_color",
+      "animation",
+      "animation_duration",
+      "animation_pause",
+    ];
 
     options.forEach((option) => {
       option["text"] =
         option?.text ?? option.input.split(";")[0].split(": ")[1];
-      option["height"] =
-        option?.height ??
-        option.preview_box?.height ??
-        ANIMATION.PREVIEW_BOX.HEIGHT;
-      option["width"] =
-        option?.width ??
-        option.preview_box?.width ??
-        ANIMATION.PREVIEW_BOX.WIDTH;
       option["animation"] =
-        useButtonAnimation ?? option?.animation ?? ANIMATION.STYLE.BOUNCE;
+        eventName === "animation"
+          ? eventValue
+          : option?.animation ?? ANIMATION.STYLE.BOUNCE;
+      option["animation_duration"] =
+        eventName === "animation_duration"
+          ? +eventValue
+          : option?.animation_duration ?? ANIMATION.DURATION;
+      option["animation_pause"] =
+        eventName === "animation_pause"
+          ? +eventValue
+          : option?.animation_pause ?? ANIMATION.PAUSE;
       option["background_color"] =
-        option?.background_color ?? option.preview_box?.bg_color ?? "white";
-
-      // formData.value.text = options["text"];
-
-      delete option.preview_box;
-      delete option.isImportFromCsv;
-      delete option.input;
-      delete option.result;
+        eventName === "background_color"
+          ? eventValue
+          : option?.background_color ?? option.preview_box?.bg_color ?? "white";
+      option["text_color"] =
+        eventName === "text_color"
+          ? eventValue
+          : option?.text_color ?? option.preview_box?.text_color ?? "black";
 
       text += Object.entries(option)
+        .filter((o) => allowedOptions.includes(o[0]))
         .map((o) => o.join(": "))
         .join("; ");
       text += "\n\n";
@@ -560,7 +557,9 @@ function getResults(item, rowIndex) {
     });
   }
 
-  return `<div class="row-${rowIndex}" style="color: ${item.text_color}"><div class="invisible">${str}</div></div>`;
+  return `<div class="row-${rowIndex}" style="color: ${
+    item?.text_color ?? "#000000"
+  }"><div class="invisible">${str}</div></div>`;
 }
 
 function toAnimate(element, item) {
@@ -612,7 +611,7 @@ function setCsvRowData(csvData) {
   csvRowDataKeys.value = csvData ? Object.keys(csvData[0]) : [];
 }
 
-async function GenerateAnimation(options, useButtonAnimation) {
+async function GenerateAnimation(options, eventTarget) {
   if (formData.value.isImportFromCsv) {
     return await makeAnimation(csvRowData.value);
   }
@@ -625,7 +624,7 @@ async function GenerateAnimation(options, useButtonAnimation) {
 
     return await makeAnimation(
       multilines.map((line) => parseOptions(line)),
-      useButtonAnimation
+      eventTarget
     );
   }
   return await makeAnimation(options);

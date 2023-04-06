@@ -313,9 +313,8 @@ function handleInputChange() {
   setTimeout(() => {
     const multilines = formData.value.input
       .split("\n\n")
-      .filter((line) => line)
+      .filter((line) => /\w/.test(line)) // removes any empty lines
       .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
-
     GenerateAnimation(multilines.map((line) => parseOptions(line)));
     updateText(multilines);
   });
@@ -621,7 +620,6 @@ async function GenerateAnimation(options, eventTarget) {
       .split("\n\n")
       .filter((line) => line)
       .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
-
     return await makeAnimation(
       multilines.map((line) => parseOptions(line)),
       eventTarget
@@ -631,18 +629,24 @@ async function GenerateAnimation(options, eventTarget) {
 }
 
 async function generateGif() {
-  const numberOfAnimations = (formData.value.input.split("%").length - 1) / 2;
-  const gifLength =
-    (+formData.value.animation_duration > +formData.value.animation_pause
-      ? +formData.value.animation_duration
-      : +formData.value.animation_pause) *
-      numberOfAnimations +
-    +formData.value.animation_pause;
+  const multilines = formData.value.input
+    .split("\n\n")
+    .filter((line) => /\w/.test(line)) // removes any empty lines
+    .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
+  const options = multilines.map((line) => parseOptions(line));
+  let gifLength = 0;
+  options.forEach((option) => {
+    const numberOfAnimations = (option?.text.split("%").length - 1) / 2;
+    gifLength +=
+      (+option?.animation_duration + +option?.animation_pause) *
+      numberOfAnimations;
+  });
+
   await GenerateAnimation();
   const downloadLink = document.getElementById("generate-btn");
   downloadLink.classList.add("disabled");
   downloadLink.innerText = "Generating GIF...";
-  console.log(gifLength, numberOfAnimations);
+  console.log(gifLength);
   await generateDownloadable(gifLength);
   downloadReady.value = true;
   downloadLink.classList.remove("disabled");

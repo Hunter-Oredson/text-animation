@@ -1,3 +1,5 @@
+import { equationChange } from "../templates";
+
 export const OUTPUTS = {
   TEXT: "Text",
   OBJECT: "Object in a Grid",
@@ -26,11 +28,7 @@ export const outputs = ["Text"];
 
 // INPUT for grid -> text: We can think of 97% x %6% as 97% groups of %5%  ⚽️.; animation: bounce; animation_duration: 700; animation_pause: 200; text_color: #FFFFFF; height: 308; width: 350; background_color: #1F2937
 export const ANIMATION = {
-  INPUT: `text: distanceAtStartTime = 
-  6%0%✖️2 = ; animation_type: text; animation: roll-off; animation_duration: 700; animation_pause: 1000; background_color: #FFFFFF; text_color: #292626;
-
-text: %12%%0%; animation_type: text; animation: jello; animation_duration: 700; animation_pause: 1200; background_color: #FFFFFF; text_color: #292626;
-`,
+  INPUT: equationChange(),
 
   DURATION: 700,
   PAUSE: 200,

@@ -226,6 +226,27 @@
             </li>
           </ul>
         </div>
+        <div>
+          <label class="block mt-4">Templates: </label>
+          <div class="flex flex-wrap gap-3">
+            <label
+              v-for="(template, index) in allTemplates"
+              :key="index"
+              class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold"
+              :class="{ 'btn-selected': formData.template === template.title }"
+            >
+              <input
+                @click="handleTemplate(template)"
+                type="radio"
+                name="template"
+                class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                v-model="formData.template"
+                :value="template.title"
+              />
+              <span>{{ template.title }}</span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -269,6 +290,7 @@ import {
   outputs,
 } from "./config/default.config";
 import { generateDownloadable } from "./downloader";
+import { allTemplates } from "./templates";
 
 const formData = ref({
   isImportFromCsv: false,
@@ -285,6 +307,7 @@ const formData = ref({
   },
   text_color: ANIMATION.TEXT_COLOR,
   result: "",
+  template: "",
 });
 
 const previewElement = ref(null);
@@ -307,6 +330,11 @@ function initiateApp() {
 
 function handleFormUpdate(e) {
   GenerateAnimation(null, e.target);
+}
+
+function handleTemplate(template) {
+  formData._rawValue.input = template.text;
+  GenerateAnimation();
 }
 
 function handleInputChange() {

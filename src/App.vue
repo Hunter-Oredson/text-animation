@@ -101,7 +101,7 @@
                 <input
                   @blur="handleFormUpdate"
                   type="color"
-                  name="background_color"
+                  name="bg_color"
                   class="ml-3 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   v-model="formData.preview_box.bg_color"
                 />
@@ -394,7 +394,6 @@ async function makeAnimation(csvData, eventTarget) {
           : ANIMATION.PAUSE,
         result: "",
         text_color: row?.text_color ?? "#FFFFFF",
-        background_color: row?.background_color ?? "#FFFFFF",
         colors: [row.param_1, row.param_2],
         [eventName]: isNaN(+eventValue) ? eventValue : +eventValue,
       };
@@ -438,7 +437,6 @@ function updateInput(data, eventTarget) {
       "text",
       "animation_type",
       "text_color",
-      "background_color",
       "animation",
       "animation_duration",
       "animation_pause",
@@ -459,10 +457,6 @@ function updateInput(data, eventTarget) {
         eventName === "animation_pause"
           ? +eventValue
           : option?.animation_pause ?? ANIMATION.PAUSE;
-      option["background_color"] =
-        eventName === "background_color"
-          ? eventValue
-          : option?.background_color ?? option.preview_box?.bg_color ?? "white";
       option["text_color"] =
         eventName === "text_color"
           ? eventValue

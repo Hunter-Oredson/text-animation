@@ -311,10 +311,7 @@ function handleFormUpdate(e) {
 
 function handleInputChange() {
   setTimeout(() => {
-    const multilines = formData.value.input
-      .split("\n\n")
-      .filter((line) => /\w/.test(line)) // removes any empty lines
-      .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
+    const multilines = getMultilines();
     GenerateAnimation(multilines.map((line) => parseOptions(line)));
     updateText(multilines);
   });
@@ -616,12 +613,8 @@ async function GenerateAnimation(options, eventTarget) {
   }
   if (!options) {
     // split up formData.value.input to make the objects below
-    const multilines = formData.value.input
-      .split("\n\n")
-      .filter((line) => line)
-      .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
     return await makeAnimation(
-      multilines.map((line) => parseOptions(line)),
+      getMultilines().map((line) => parseOptions(line)),
       eventTarget
     );
   }
@@ -629,11 +622,7 @@ async function GenerateAnimation(options, eventTarget) {
 }
 
 async function generateGif() {
-  const multilines = formData.value.input
-    .split("\n\n")
-    .filter((line) => /\w/.test(line)) // removes any empty lines
-    .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
-  const options = multilines.map((line) => parseOptions(line));
+  const options = getMultilines().map((line) => parseOptions(line));
   let gifLength = 0;
   options.forEach((option) => {
     const numberOfAnimations = (option?.text.split("%").length - 1) / 2;
@@ -651,5 +640,12 @@ async function generateGif() {
   downloadReady.value = true;
   downloadLink.classList.remove("disabled");
   downloadLink.innerText = "Generate GIF";
+}
+
+function getMultilines() {
+  return formData.value.input
+    .split("\n\n")
+    .filter((line) => /\w/.test(line)) // removes any empty lines
+    .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
 }
 </script>

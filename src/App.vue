@@ -565,6 +565,14 @@ function getResults(item, rowIndex) {
       );
     }
   }
+
+  const regex_within_tags = /\<(.*?)\>(.*?)\<\/\>/gm;
+  while ((m = regex_within_tags.exec(str)) !== null) {
+    if (m.index === regex_within_tags.lastIndex) regex_within_tags.lastIndex++;
+    let style = m[1].replaceAll("=", ":");
+    str = str.replaceAll(m[0], `<span style="${style}">${m[2]}</span>`);
+  }
+
   if (item.animation_type == OUTPUTS.OBJECT) {
     str = "";
     [...Array(number_1)].forEach(() => {
@@ -605,23 +613,6 @@ function onFileUpload(e) {
     setCsvRowData([]);
     csvFileName.value = "";
   }
-}
-
-async function readStaticCSV() {
-  const fileString = `base,animation,animation_duration,animation_pause,type,param_1,param_2,animation_type
-We can think of %2% x %8% as %2% group of %8% circles.,bounce,1000,300,text,#FF500D,#3B6404,We can think of 1 x 8 as 1 group of 8 circles.
-We can think of %1% x %8% as %1% group of %8% circles.,wobble,2000,2000,text,#FF500D,#3B6404,We can think of 1 x 8 as 1 group of 8 circles.
-We can think of %1% x %8% as %1% group of %8% circles.,blink,,,text,#FF500D,#3B6404,We can think of 1 x 8 as 1 group of 8 circles.
-We can think of %1% x %8% as %1% group of %8% circles.,jello,500,1000,text,#FF500D,#3B6404,We can think of 1 x 8 as 1 group of 8 circles.
-We can think of %2% x %5% as %2% groups of %5% 🔵.,bounce,2000,2000,objectsInAGrid,2,5,
-`;
-  const jsonObject = Papa.parse(fileString, {
-    delimiter: ",",
-    dynamicTyping: true,
-    header: true,
-    skipEmptyLines: true,
-  });
-  setCsvRowData(jsonObject.data);
 }
 
 function setCsvRowData(csvData) {

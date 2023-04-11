@@ -10,13 +10,9 @@ export const threeExamples = () => `text:
     Gallons (gal) %🥛🍼%
      Pounds (lb) %⚖️🏋️% ; animation: jello; animation_duration: 600; animation_pause: 600; text_color: #292626;`;
 
-export const volumeTip = () => `text: %💧% 
- 🟪↕️ 
+export const cube = () => `text: %💧% 
+ <font-size: 24pt>🧊</>↕️ 
  ↔️ ; animation: bounce; animation_duration: 500; animation_pause: 400; text_color: #292626;`;
-
-export const cube = () => `text: 
- 🧊%↕️ %
-  %↔️%%↗️% ; animation: jello; animation_duration: 600; animation_pause: 600; text_color: #292626;`;
 
 export const improperFractionConversion =
   () => `text:         1         %5%  ; animation_type: text; animation: spin; animation_duration: 500; animation_pause: 2000; text_color: #292626;
@@ -41,7 +37,6 @@ text: %12%%0%; animation_type: text; animation: jello; animation_duration: 700; 
 export const allTemplates = [
   { title: "Proper Fraction", text: properFraction() },
   { title: "3 Examples", text: threeExamples() },
-  { title: "Volume Tip", text: volumeTip() },
   { title: "Cube", text: cube() },
   {
     title: "Fraction Conversion - Improper",

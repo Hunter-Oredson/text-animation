@@ -477,33 +477,34 @@ function updateInput(data, eventTarget) {
 }
 
 async function animateToQueue(items) {
-  await makePromise(async () => {
+  makePromise(async () => {
     if (previewElement.value) {
-      for (let rowIndex = 0; rowIndex < items.length; rowIndex++) {
-        const item = items[rowIndex];
-        const animation_pause = item.animation_pause;
-        const elements = Array.from(
-          previewElement.value.querySelectorAll(`.row-${rowIndex} .invisible`)
-        );
-        if (
-          item.animation.includes("off") ||
-          item.animation.toLowerCase() === "shrink"
-        ) {
-          elements.forEach((element) => {
-            element.className = "";
-          });
-        }
-        for (let index = 0; index < elements.length; index++) {
-          const element = elements[index];
-          if (index === 0) {
-            element.className = "";
-          } else {
-            await makePromise(() => {
-              toAnimate(element, item);
-            }, animation_pause);
+      // using forEach allows us to play each row at the same time
+      // if we want to play them one after another, it would need to be a for loop
+      items.forEach(async (item, rowIndex) => {
+          const animation_pause = item.animation_pause;
+          const elements = Array.from(
+            previewElement.value.querySelectorAll(`.row-${rowIndex} .invisible`)
+          );
+          if (
+            item.animation.includes("off") ||
+            item.animation.toLowerCase() === "shrink"
+          ) {
+            elements.forEach((element) => {
+              element.className = "";
+            });
           }
-        }
-      }
+          for (let index = 0; index < elements.length; index++) {
+            const element = elements[index];
+            if (index === 0) {
+              element.className = "";
+            } else {
+              await makePromise(() => {
+                toAnimate(element, item);
+              }, animation_pause);
+            }
+          }
+      })
     }
   }, 50);
 }

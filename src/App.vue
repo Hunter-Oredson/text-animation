@@ -207,26 +207,6 @@
           </button>
         </div>
         <div>
-          <h3 class="group-title">Tips</h3>
-          <ul>
-            <li>
-              Between the two quotes to the right is a thin space character: “ ”
-            </li>
-            <li>Here is an inverted underscore character: ▔</li>
-            <li>
-              To add an emoji (🐈🐶🔵) on a Windows computer, press Win + ;
-            </li>
-            <li>
-              To add an emoji (🐈🐶🔵) on a Mac computer, press Command +
-              Control + Space
-            </li>
-            <li>
-              You can add multiple lines of text in a single ‘row’ of text
-              input. This is helpful when explaining arithmetic.
-            </li>
-          </ul>
-        </div>
-        <div>
           <label class="block mt-4">Templates: </label>
           <div class="flex flex-wrap gap-3">
             <label
@@ -246,6 +226,29 @@
               <span>{{ template.title }}</span>
             </label>
           </div>
+        </div>
+        <div>
+          <h3 class="group-title">Tips</h3>
+          <ul style="list-style: circle;">
+            <li>
+              Between the two quotes to the right is a thin space character: “ ”
+            </li>
+            <li>Here is an inverted underscore character: ▔</li>
+            <li>
+              To add an emoji (🐈🐶🔵) on a Windows computer, press Win + ;
+            </li>
+            <li>
+              To add an emoji (🐈🐶🔵) on a Mac computer, press Command +
+              Control + Space
+            </li>
+            <li>
+              You can add multiple lines of text in a single ‘row’ of text
+              input. This is helpful when explaining arithmetic.
+            </li>
+            <li>You can style any part of the text by wrapping words with brackets (&#60&#62 and &#60/&#62) and typing a style attribute in the first bracket.
+              <br/>(i.e. &#60font-size: 24pt;&#62 big text &#60/&#62)
+            </li>
+          </ul>
         </div>
       </div>
     </div>

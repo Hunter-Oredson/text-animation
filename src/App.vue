@@ -414,7 +414,7 @@ function parseOptions(input = formData.value.input) {
   const options = input
     .split("; ")
     .map((option) => {
-      return option.split(/: (.*)/s);
+      return option.split(/:\s?(.*)/s);
     })
     .reduce((acc, [key, value]) => {
       acc[key] = value;

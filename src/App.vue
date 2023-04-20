@@ -302,6 +302,10 @@ import {
 import { generateDownloadable } from "./downloader";
 import { allTemplates } from "./templates";
 import { resizeText } from "./helper";
+import background_1 from "./assets/scenes/two_conversation_1.gif";
+import background_2 from "./assets/scenes/two_conversation_2.gif";
+import bubble_1 from "./assets/bubbles/bubble_1.png";
+import bubble_2 from "./assets/bubbles/bubble_2.png";
 
 const formData = ref({
   isImportFromCsv: false,
@@ -421,16 +425,40 @@ async function makeAnimation(csvData, eventTarget) {
     if (!csvData.length) {
       return;
     }
+    const getScene = (index) => {
+      switch (index) {
+        case 1:
+          return background_1;
+
+        case 2:
+          return background_2;
+
+        default:
+          return background_1;
+      }
+    };
+    const getBubble = (index) => {
+      switch (index) {
+        case 1:
+          return bubble_1;
+
+        case 2:
+          return bubble_2;
+
+        default:
+          return bubble_1;
+      }
+    };
     // get random scene
     const randomNumber = Math.floor(Math.random() * 2) + 1; // randomly give 1 or 2
     const background = document.createElement("img");
-    background.src = `../src/assets/scenes/two_conversation_${randomNumber}.gif`;
+    background.src = getScene(randomNumber);
     background.alt = "scene";
     // determine if we have 1 line or 2 lines for either 1 or 2 text bubbles
     const hasTwoLines = csvData.length > 1;
     // if we have more than 2 we will delete the rest
     const chatBubble = document.createElement("img");
-    chatBubble.src = `../src/assets/bubbles/bubble_${hasTwoLines ? 2 : 1}.png`;
+    chatBubble.src = getBubble(hasTwoLines ? 2 : 1);
     chatBubble.alt = "bubble";
     chatBubble.style =
       "position: relative; top: -490px; transform: scale(0.75);";

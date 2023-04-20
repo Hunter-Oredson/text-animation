@@ -424,13 +424,13 @@ async function makeAnimation(csvData, eventTarget) {
     // get random scene
     const randomNumber = Math.floor(Math.random() * 2) + 1; // randomly give 1 or 2
     const background = document.createElement("img");
-    background.src = `/src/assets/scenes/two_conversation_${randomNumber}.gif`;
+    background.src = `../src/assets/scenes/two_conversation_${randomNumber}.gif`;
     background.alt = "scene";
     // determine if we have 1 line or 2 lines for either 1 or 2 text bubbles
     const hasTwoLines = csvData.length > 1;
     // if we have more than 2 we will delete the rest
     const chatBubble = document.createElement("img");
-    chatBubble.src = `/src/assets/bubbles/bubble_${hasTwoLines ? 2 : 1}.png`;
+    chatBubble.src = `../src/assets/bubbles/bubble_${hasTwoLines ? 2 : 1}.png`;
     chatBubble.alt = "bubble";
     chatBubble.style =
       "position: relative; top: -490px; transform: scale(0.75);";

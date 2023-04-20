@@ -109,50 +109,52 @@
             </label>
           </div>
           <hr />
-          <label class="block mt-4">Animation Style: </label>
-          <div class="flex flex-wrap gap-3">
-            <label
-              v-for="(item, index) in animations"
-              :key="index"
-              class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold"
-              :class="{ 'btn-selected': formData.animation === item }"
-            >
-              <input
-                @click="handleFormUpdate"
-                type="radio"
-                name="animation"
-                class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="formData.animation"
-                :value="item"
-              />
-              <span>{{ item }}</span>
-            </label>
-          </div>
-          <div>
-            <label class="block mt-4">
-              <span class="block">Animation Duration (ms):</span>
-              <input
-                @blur="handleFormUpdate"
-                type="number"
-                name="animation_duration"
-                step="50"
-                class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="formData.animation_duration"
-              />
-            </label>
-          </div>
-          <div>
-            <label class="block mt-4">
-              <span class="block">Animation Pause (ms):</span>
-              <input
-                @blur="handleFormUpdate"
-                type="number"
-                name="animation_pause"
-                step="50"
-                class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="formData.animation_pause"
-              />
-            </label>
+          <div v-if="formData.animation_type === 'Text'">
+            <label class="block mt-4">Animation Style: </label>
+            <div class="flex flex-wrap gap-3">
+              <label
+                v-for="(item, index) in animations"
+                :key="index"
+                class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold"
+                :class="{ 'btn-selected': formData.animation === item }"
+              >
+                <input
+                  @click="handleFormUpdate"
+                  type="radio"
+                  name="animation"
+                  class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  v-model="formData.animation"
+                  :value="item"
+                />
+                <span>{{ item }}</span>
+              </label>
+            </div>
+            <div>
+              <label class="block mt-4">
+                <span class="block">Animation Duration (ms):</span>
+                <input
+                  @blur="handleFormUpdate"
+                  type="number"
+                  name="animation_duration"
+                  step="50"
+                  class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  v-model="formData.animation_duration"
+                />
+              </label>
+            </div>
+            <div>
+              <label class="block mt-4">
+                <span class="block">Animation Pause (ms):</span>
+                <input
+                  @blur="handleFormUpdate"
+                  type="number"
+                  name="animation_pause"
+                  step="50"
+                  class="mt-1 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  v-model="formData.animation_pause"
+                />
+              </label>
+            </div>
           </div>
         </div>
         <div v-else>
@@ -229,7 +231,7 @@
         </div>
         <div>
           <h3 class="group-title">Tips</h3>
-          <ul style="list-style: circle;">
+          <ul style="list-style: circle">
             <li>
               Between the two quotes to the right is a thin space character: “ ”
             </li>
@@ -245,8 +247,11 @@
               You can add multiple lines of text in a single ‘row’ of text
               input. This is helpful when explaining arithmetic.
             </li>
-            <li>You can style any part of the text by wrapping words with brackets (&#60&#62 and &#60/&#62) and typing a style attribute in the first bracket.
-              <br/>(i.e. &#60font-size: 24pt;&#62 big text &#60/&#62)
+            <li>
+              You can style any part of the text by wrapping words with brackets
+              (&#60;&#62; and &#60;/&#62;) and typing a style attribute in the
+              first bracket. <br />(i.e. &#60;font-size: 24pt;&#62; big text
+              &#60;/&#62;)
             </li>
           </ul>
         </div>
@@ -291,9 +296,12 @@ import {
   OUTPUTS,
   animations,
   outputs,
+  scenes,
+  bubbles,
 } from "./config/default.config";
 import { generateDownloadable } from "./downloader";
 import { allTemplates } from "./templates";
+import { resizeText } from "./helper";
 
 const formData = ref({
   isImportFromCsv: false,
@@ -374,43 +382,103 @@ async function makeAnimation(csvData, eventTarget) {
   const eventName = eventTarget?.name;
   const eventValue = eventTarget?.value;
 
-  await makePromise(async () => {
-    const OUTPUTS_OBJECT = OUTPUTS.OBJECT.split(" ")[0]?.toLowerCase();
-    const items = [];
-    let itemsHtml = "";
-    for (let rowIndex = 0; rowIndex < csvData.length; rowIndex++) {
-      const row = csvData[rowIndex];
-      let rowOutput = row?.animation_type
-        ?.toLowerCase()
-        ?.includes(OUTPUTS_OBJECT)
-        ? OUTPUTS.OBJECT
-        : OUTPUTS.TEXT;
-      const item = {
-        input: row.text + " ",
-        animation: row?.animation ?? ANIMATION.STYLE.BOUNCE,
-        animation_type: rowOutput,
-        animation_duration: row?.animation_duration
-          ? +row.animation_duration
-          : ANIMATION.DURATION,
-        animation_pause: row?.animation_pause
-          ? +row.animation_pause
-          : ANIMATION.PAUSE,
-        result: "",
-        text_color: row?.text_color ?? "#FFFFFF",
-        colors: [row.param_1, row.param_2],
-        [eventName]: isNaN(+eventValue) ? eventValue : +eventValue,
-      };
-      item.result = getResults(item, rowIndex);
-      itemsHtml += item.result;
-      items.push(item);
+  if (formData._rawValue.animation_type === "Text") {
+    await makePromise(async () => {
+      const OUTPUTS_OBJECT = OUTPUTS.OBJECT.split(" ")[0]?.toLowerCase();
+      const items = [];
+      let itemsHtml = "";
+      for (let rowIndex = 0; rowIndex < csvData.length; rowIndex++) {
+        const row = csvData[rowIndex];
+        let rowOutput = row?.animation_type
+          ?.toLowerCase()
+          ?.includes(OUTPUTS_OBJECT)
+          ? OUTPUTS.OBJECT
+          : OUTPUTS.TEXT;
+        const item = {
+          input: row.text + " ",
+          animation: row?.animation ?? ANIMATION.STYLE.BOUNCE,
+          animation_type: rowOutput,
+          animation_duration: row?.animation_duration
+            ? +row.animation_duration
+            : ANIMATION.DURATION,
+          animation_pause: row?.animation_pause
+            ? +row.animation_pause
+            : ANIMATION.PAUSE,
+          result: "",
+          text_color: row?.text_color ?? "#FFFFFF",
+          colors: [row.param_1, row.param_2],
+          [eventName]: isNaN(+eventValue) ? eventValue : +eventValue,
+        };
+        item.result = getResults(item, rowIndex);
+        itemsHtml += item.result;
+        items.push(item);
+      }
+      formData.value.result = itemsHtml;
+      await animateToQueue(items);
+    }, 50);
+  }
+  if (formData._rawValue.animation_type === "Conversation") {
+    if (!csvData.length) {
+      return;
     }
-    formData.value.result = itemsHtml;
-    await animateToQueue(items);
-  }, 50);
+    // get random scene
+    const randomNumber = Math.floor(Math.random() * 2) + 1; // randomly give 1 or 2
+    const background = document.createElement("img");
+    background.src = `/src/assets/scenes/two_conversation_${randomNumber}.gif`;
+    background.alt = "scene";
+    // determine if we have 1 line or 2 lines for either 1 or 2 text bubbles
+    const hasTwoLines = csvData.length > 1;
+    // if we have more than 2 we will delete the rest
+    const chatBubble = document.createElement("img");
+    chatBubble.src = `/src/assets/bubbles/bubble_${hasTwoLines ? 2 : 1}.png`;
+    chatBubble.alt = "bubble";
+    chatBubble.style =
+      "position: relative; top: -490px; transform: scale(0.75);";
+
+    const firstText = document.createElement("span");
+    firstText.innerHTML = csvData[0];
+    firstText.style =
+      "position: relative; top: -835px; left: 155px; display: block; width: 125px; height: 100px; text-overflow: ellipsis; overflow: hidden; padding: 5px;";
+    const firstTextContainer = document.createElement("div");
+    firstTextContainer.appendChild(firstText);
+
+    const secondText = document.createElement("span");
+    if (hasTwoLines) {
+      secondText.innerHTML = csvData[1];
+    }
+    secondText.style =
+      "position: relative; top: -775px; left: 155px; display: block; width: 125px; height: 100px; text-overflow: ellipsis; overflow: hidden; padding: 5px;";
+    const secondTextContainer = document.createElement("div");
+    secondTextContainer.appendChild(secondText);
+
+    resizeText({
+      elements: [firstText, secondText],
+      maxSize: 15,
+    });
+    const scene = document.createElement("div");
+    scene.appendChild(background);
+    scene.appendChild(chatBubble);
+    scene.appendChild(firstTextContainer);
+    scene.appendChild(secondTextContainer);
+    scene.style = "height: 450px;";
+
+    previewElement.value.hasChildNodes()
+      ? previewElement.value.replaceChild(
+          scene,
+          previewElement.value.childNodes[0]
+        )
+      : previewElement.value.append(scene);
+
+    // text -> bubble -> scene
+    // make sure input text is up to date
+  }
   updateInput(csvData, { name: eventName, value: eventValue }); // sending object like this because state gets messed up for some reason if we just pass in the eventTarget
 }
 
 function parseOptions(input = formData.value.input) {
+  if (formData._rawValue.animation_type === "Conversation") {
+    return input;
+  }
   const options = input
     .split("; ")
     .map((option) => {
@@ -426,53 +494,61 @@ function parseOptions(input = formData.value.input) {
 
 function updateInput(data, eventTarget) {
   setTimeout(() => {
-    const formDataValues = { ...formData._rawValue };
-    let options =
-      data ??
-      Object.entries(formDataValues).reduce((acc, [key, value]) => {
-        acc[key] = value;
-        return acc;
-      }, {});
-    let text = "";
-    const eventName = eventTarget?.name;
-    const eventValue = eventTarget?.value;
-    const allowedOptions = [
-      "text",
-      "animation_type",
-      "text_color",
-      "animation",
-      "animation_duration",
-      "animation_pause",
-    ];
+    if (formData._rawValue.animation_type === "Conversation") {
+      let text = "";
+      data.forEach((d, i) => {
+        if (i < 2) text += d + "\n\n";
+      });
+      formData.value.input = text;
+    } else {
+      const formDataValues = { ...formData._rawValue };
+      let options =
+        data ??
+        Object.entries(formDataValues).reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+      let text = "";
+      const eventName = eventTarget?.name;
+      const eventValue = eventTarget?.value;
+      const allowedOptions = [
+        "text",
+        "animation_type",
+        "text_color",
+        "animation",
+        "animation_duration",
+        "animation_pause",
+      ];
 
-    options.forEach((option) => {
-      option["text"] =
-        option?.text ?? option.input.split(";")[0].split(": ")[1];
-      option["animation"] =
-        eventName === "animation"
-          ? eventValue
-          : option?.animation ?? ANIMATION.STYLE.BOUNCE;
-      option["animation_duration"] =
-        eventName === "animation_duration"
-          ? +eventValue
-          : option?.animation_duration ?? ANIMATION.DURATION;
-      option["animation_pause"] =
-        eventName === "animation_pause"
-          ? +eventValue
-          : option?.animation_pause ?? ANIMATION.PAUSE;
-      option["text_color"] =
-        eventName === "text_color"
-          ? eventValue
-          : option?.text_color ?? option.preview_box?.text_color ?? "black";
+      options.forEach((option) => {
+        option["text"] =
+          option?.text ?? option.input.split(";")[0].split(": ")[1];
+        option["animation"] =
+          eventName === "animation"
+            ? eventValue
+            : option?.animation ?? ANIMATION.STYLE.BOUNCE;
+        option["animation_duration"] =
+          eventName === "animation_duration"
+            ? +eventValue
+            : option?.animation_duration ?? ANIMATION.DURATION;
+        option["animation_pause"] =
+          eventName === "animation_pause"
+            ? +eventValue
+            : option?.animation_pause ?? ANIMATION.PAUSE;
+        option["text_color"] =
+          eventName === "text_color"
+            ? eventValue
+            : option?.text_color ?? option.preview_box?.text_color ?? "black";
 
-      text += Object.entries(option)
-        .filter((o) => allowedOptions.includes(o[0]))
-        .map((o) => o.join(": "))
-        .join("; ");
-      text += "\n\n";
-    });
+        text += Object.entries(option)
+          .filter((o) => allowedOptions.includes(o[0]))
+          .map((o) => o.join(": "))
+          .join("; ");
+        text += "\n\n";
+      });
 
-    formData.value.input = text;
+      formData.value.input = text;
+    }
   }, 10);
 }
 
@@ -482,29 +558,29 @@ async function animateToQueue(items) {
       // using forEach allows us to play each row at the same time
       // if we want to play them one after another, it would need to be a for loop
       items.forEach(async (item, rowIndex) => {
-          const animation_pause = item.animation_pause;
-          const elements = Array.from(
-            previewElement.value.querySelectorAll(`.row-${rowIndex} .invisible`)
-          );
-          if (
-            item.animation.includes("off") ||
-            item.animation.toLowerCase() === "shrink"
-          ) {
-            elements.forEach((element) => {
-              element.className = "";
-            });
+        const animation_pause = item.animation_pause;
+        const elements = Array.from(
+          previewElement.value.querySelectorAll(`.row-${rowIndex} .invisible`)
+        );
+        if (
+          item.animation.includes("off") ||
+          item.animation.toLowerCase() === "shrink"
+        ) {
+          elements.forEach((element) => {
+            element.className = "";
+          });
+        }
+        for (let index = 0; index < elements.length; index++) {
+          const element = elements[index];
+          if (index === 0) {
+            element.className = "";
+          } else {
+            await makePromise(() => {
+              toAnimate(element, item);
+            }, animation_pause);
           }
-          for (let index = 0; index < elements.length; index++) {
-            const element = elements[index];
-            if (index === 0) {
-              element.className = "";
-            } else {
-              await makePromise(() => {
-                toAnimate(element, item);
-              }, animation_pause);
-            }
-          }
-      })
+        }
+      });
     }
   }, 50);
 }
@@ -641,19 +717,30 @@ async function GenerateAnimation(options, eventTarget) {
 async function generateGif() {
   const options = getMultilines().map((line) => parseOptions(line));
   let gifLength = 0;
-  options.forEach((option) => {
-    const numberOfAnimations = (option?.text.split("%").length - 1) / 2;
-    gifLength +=
-      (+option?.animation_duration + +option?.animation_pause) *
-      numberOfAnimations;
-  });
+  const type =
+    formData._rawValue.animation_type === "Conversation"
+      ? "canvas"
+      : formData._rawValue.animation_type === "Text"
+      ? "gif"
+      : null;
+  if (type === "mp4") {
+    gifLength = 500;
+  }
+  if (type === "gif") {
+    options.forEach((option) => {
+      const numberOfAnimations = (option?.text.split("%").length - 1) / 2;
+      gifLength +=
+        (+option?.animation_duration + +option?.animation_pause) *
+        numberOfAnimations;
+    });
+  }
 
   await GenerateAnimation();
   const downloadLink = document.getElementById("generate-btn");
   downloadLink.classList.add("disabled");
   downloadLink.innerText = "Generating GIF...";
   console.log(gifLength);
-  await generateDownloadable(gifLength);
+  await generateDownloadable(gifLength, type);
   downloadReady.value = true;
   downloadLink.classList.remove("disabled");
   downloadLink.innerText = "Generate GIF";

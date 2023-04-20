@@ -3,6 +3,7 @@ import { equationChange } from "../templates";
 export const OUTPUTS = {
   TEXT: "Text",
   OBJECT: "Object in a Grid",
+  CONVERSATION: "Conversation",
 };
 export const animations = [
   "bounce",
@@ -24,7 +25,9 @@ export const animations = [
   "swing",
   "swing-off",
 ];
-export const outputs = ["Text"];
+export const outputs = ["Text", "Conversation"];
+export const scenes = ["man_and_women", "monkey_and_lion"];
+export const bubbles = ["bubble_1", "bubble_2"];
 
 // INPUT for grid -> text: We can think of 97% x %6% as 97% groups of %5%  ⚽️.; animation: bounce; animation_duration: 700; animation_pause: 200; text_color: #FFFFFF; height: 308; width: 350; background_color: #1F2937
 export const ANIMATION = {

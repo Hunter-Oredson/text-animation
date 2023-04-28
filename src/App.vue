@@ -111,9 +111,29 @@
           <hr />
           <div v-if="formData.animation_type === 'Text'">
             <label class="block mt-4">Animation Style: </label>
+            <u class="block mt-4">Entrance Animations</u>
             <div class="flex flex-wrap gap-3">
               <label
-                v-for="(item, index) in animations"
+                v-for="(item, index) in animations.entrance"
+                :key="index"
+                class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold"
+                :class="{ 'btn-selected': formData.animation === item }"
+              >
+                <input
+                  @click="handleFormUpdate"
+                  type="radio"
+                  name="animation"
+                  class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  v-model="formData.animation"
+                  :value="item"
+                />
+                <span>{{ item }}</span>
+              </label>
+            </div>
+            <u class="block mt-4">Exit Animations</u>
+            <div class="flex flex-wrap gap-3">
+              <label
+                v-for="(item, index) in animations.exit"
                 :key="index"
                 class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold"
                 :class="{ 'btn-selected': formData.animation === item }"
@@ -231,11 +251,14 @@
         </div>
         <div>
           <h3 class="group-title">Tips</h3>
-          <ul style="list-style: circle">
+          <ul style="list-style: circle" class="ml-6">
             <li>
               Between the two quotes to the right is a thin space character: “ ”
             </li>
-            <li>Here is an inverted underscore character: ▔</li>
+            <li>
+              Here are some hard to find symbols that might be helpful: ▔
+              ✖️🟰➗➖ ≈ π •
+            </li>
             <li>
               To add an emoji (🐈🐶🔵) on a Windows computer, press Win + ;
             </li>
@@ -311,7 +334,7 @@ const formData = ref({
   isImportFromCsv: false,
   input: ANIMATION.INPUT,
   text: "",
-  animation: animations[0],
+  animation: animations.entrance[0],
   animation_type: outputs[0],
   animation_duration: ANIMATION.DURATION,
   animation_pause: ANIMATION.PAUSE,

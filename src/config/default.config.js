@@ -5,26 +5,37 @@ export const OUTPUTS = {
   OBJECT: "Object in a Grid",
   CONVERSATION: "Conversation",
 };
-export const animations = [
-  "bounce",
-  "bounce-off",
-  "blink",
-  "blink-off",
-  "jello",
-  "jello-off",
-  "wobble",
-  "wobble-off",
-  "spin",
-  "dance",
-  "grow",
-  "shrink",
-  "roll",
-  "roll-off",
-  "scale",
-  "scale-off",
-  "swing",
-  "swing-off",
-];
+export const animations = {
+  entrance: [
+    "bounce",
+
+    "blink",
+
+    "jello",
+
+    "wobble",
+
+    "spin",
+    "dance",
+    "grow",
+
+    "roll",
+
+    "scale",
+
+    "swing",
+  ],
+  exit: [
+    "bounce-off",
+    "blink-off",
+    "jello-off",
+    "wobble-off",
+    "shrink",
+    "roll-off",
+    "scale-off",
+    "swing-off",
+  ],
+};
 export const outputs = ["Text", "Conversation"];
 export const scenes = ["man_and_women", "monkey_and_lion"];
 export const bubbles = ["bubble_1", "bubble_2"];

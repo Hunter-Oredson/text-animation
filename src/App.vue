@@ -18,6 +18,16 @@
         </div> -->
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
+            <span>Template Search:</span>
+            <SearchAutocomplete
+              :items="allTemplates.map((template) => template.title)"
+              @selected="handleTemplate($event)"
+              @keyup.enter="handleTemplate($event.target.value)"
+              v-model="formData.search"
+            />
+          </label>
+
+          <label class="block mt-3">
             <span>Input Text:</span>
             <textarea
               rows="4"
@@ -224,30 +234,10 @@
             id="generate-btn"
             class="mt-3 ml-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
             @click="generateGif"
+            v-if="formData.animation_type === 'Text'"
           >
             Generate GIF
           </button>
-        </div>
-        <div>
-          <label class="block mt-4">Templates: </label>
-          <div class="flex flex-wrap gap-3">
-            <label
-              v-for="(template, index) in allTemplates"
-              :key="index"
-              class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold"
-              :class="{ 'btn-selected': formData.template === template.title }"
-            >
-              <input
-                @click="handleTemplate(template)"
-                type="radio"
-                name="template"
-                class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="formData.template"
-                :value="template.title"
-              />
-              <span>{{ template.title }}</span>
-            </label>
-          </div>
         </div>
         <div>
           <h3 class="group-title">Tips</h3>
@@ -329,6 +319,7 @@ import background_1 from "./assets/scenes/two_conversation_1.gif";
 import background_2 from "./assets/scenes/two_conversation_2.gif";
 import bubble_1 from "./assets/bubbles/bubble_1.png";
 import bubble_2 from "./assets/bubbles/bubble_2.png";
+import SearchAutocomplete from "./SearchAutocomplete.vue";
 
 const formData = ref({
   isImportFromCsv: false,
@@ -346,6 +337,7 @@ const formData = ref({
   text_color: ANIMATION.TEXT_COLOR,
   result: "",
   template: "",
+  search: ANIMATION.INPUT,
 });
 
 const previewElement = ref(null);
@@ -371,7 +363,8 @@ function handleFormUpdate(e) {
 }
 
 function handleTemplate(template) {
-  formData._rawValue.input = template.text;
+  const filteredTemplate = allTemplates.find((t) => t.title === template);
+  formData._rawValue.input = filteredTemplate.text;
   GenerateAnimation();
 }
 
@@ -489,7 +482,7 @@ async function makeAnimation(csvData, eventTarget) {
     const firstText = document.createElement("span");
     firstText.innerHTML = csvData[0];
     firstText.style =
-      "position: relative; top: -835px; left: 155px; display: block; width: 125px; height: 100px; text-overflow: ellipsis; overflow: hidden; padding: 5px;";
+      "position: relative; top: -835px; left: 155px; display: block; width: 125px; height: 100px; text-overflow: ellipsis; overflow: hidden; padding: 5px; display: flex; justify-content: center; align-items: center; font-weight: 600; font-family: comic-sans;";
     const firstTextContainer = document.createElement("div");
     firstTextContainer.appendChild(firstText);
 
@@ -498,7 +491,7 @@ async function makeAnimation(csvData, eventTarget) {
       secondText.innerHTML = csvData[1];
     }
     secondText.style =
-      "position: relative; top: -775px; left: 155px; display: block; width: 125px; height: 100px; text-overflow: ellipsis; overflow: hidden; padding: 5px;";
+      "position: relative; top: -775px; left: 155px; display: block; width: 125px; height: 100px; text-overflow: ellipsis; overflow: hidden; padding: 5px; display: flex; justify-content: center; align-items: center; font-weight: 600; font-family: comic-sans;";
     const secondTextContainer = document.createElement("div");
     secondTextContainer.appendChild(secondText);
 

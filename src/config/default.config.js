@@ -8,21 +8,14 @@ export const OUTPUTS = {
 export const animations = {
   entrance: [
     "bounce",
-
     "blink",
-
     "jello",
-
     "wobble",
-
     "spin",
     "dance",
     "grow",
-
     "roll",
-
     "scale",
-
     "swing",
   ],
   exit: [

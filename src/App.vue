@@ -409,32 +409,39 @@ async function makeAnimation(csvData, eventTarget) {
       let itemsHtml = "";
       for (let rowIndex = 0; rowIndex < csvData.length; rowIndex++) {
         const row = csvData[rowIndex];
-        let rowOutput = row?.animation_type
-          ?.toLowerCase()
-          ?.includes(OUTPUTS_OBJECT)
-          ? OUTPUTS.OBJECT
-          : OUTPUTS.TEXT;
-        const item = {
-          input: row.text + " ",
-          animation: row?.animation ?? ANIMATION.STYLE.BOUNCE,
-          animation_type: rowOutput,
-          animation_duration: row?.animation_duration
-            ? +row.animation_duration
-            : ANIMATION.DURATION,
-          animation_pause: row?.animation_pause
-            ? +row.animation_pause
-            : ANIMATION.PAUSE,
-          result: "",
-          text_color: row?.text_color ?? "#FFFFFF",
-          colors: [row.param_1, row.param_2],
-          [eventName]: isNaN(+eventValue) ? eventValue : +eventValue,
-        };
-        item.result = getResults(item, rowIndex);
-        itemsHtml += item.result;
-        items.push(item);
+        if (row?.length) {
+          itemsHtml += `<div class="stringRow-${rowIndex}"><div>${row.join(
+            "\n"
+          )}</div></div>`;
+        } else {
+          let rowOutput = row?.animation_type
+            ?.toLowerCase()
+            ?.includes(OUTPUTS_OBJECT)
+            ? OUTPUTS.OBJECT
+            : OUTPUTS.TEXT;
+          const item = {
+            input: row.text + " ",
+            animation: row?.animation ?? ANIMATION.STYLE.BOUNCE,
+            animation_type: rowOutput,
+            animation_duration: row?.animation_duration
+              ? +row.animation_duration
+              : ANIMATION.DURATION,
+            animation_pause: row?.animation_pause
+              ? +row.animation_pause
+              : ANIMATION.PAUSE,
+            result: "",
+            text_color: row?.text_color ?? "#FFFFFF",
+            colors: [row.param_1, row.param_2],
+            [eventName]: isNaN(+eventValue) ? eventValue : +eventValue,
+          };
+          item.result = getResults(item, rowIndex);
+          item.index = rowIndex;
+          itemsHtml += item.result;
+          items.push(item);
+        }
+        formData.value.result = itemsHtml;
       }
-      formData.value.result = itemsHtml;
-      await animateToQueue(items);
+      await stringAnimateDelay(csvData, items);
     }, 50);
   }
   if (formData._rawValue.animation_type === "Conversation") {
@@ -523,15 +530,27 @@ function parseOptions(input = formData.value.input) {
   if (formData._rawValue.animation_type === "Conversation") {
     return input;
   }
-  const options = input
-    .split("; ")
-    .map((option) => {
-      return option.split(/:\s?(.*)/s);
-    })
-    .reduce((acc, [key, value]) => {
+  const options = input.split("; ").map((option) => {
+    const formattedOption = option.split(/:\s?(.*)/s);
+    if (
+      formattedOption[0] === "text" ||
+      formattedOption[0] === "animation_type" ||
+      formattedOption[0] === "animation" ||
+      formattedOption[0] === "animation_duration" ||
+      formattedOption[0] === "animation_pause" ||
+      formattedOption[0] === "text_color"
+    ) {
+      return formattedOption;
+    }
+    return input;
+  });
+
+  if (options.length === 5 || options.length === 6) {
+    return options.reduce((acc, [key, value]) => {
       acc[key] = value;
       return acc;
     }, {});
+  }
 
   return options;
 }
@@ -565,30 +584,33 @@ function updateInput(data, eventTarget) {
       ];
 
       options.forEach((option) => {
-        option["text"] =
-          option?.text ?? option.input.split(";")[0].split(": ")[1];
-        option["animation"] =
-          eventName === "animation"
-            ? eventValue
-            : option?.animation ?? ANIMATION.STYLE.BOUNCE;
-        option["animation_duration"] =
-          eventName === "animation_duration"
-            ? +eventValue
-            : option?.animation_duration ?? ANIMATION.DURATION;
-        option["animation_pause"] =
-          eventName === "animation_pause"
-            ? +eventValue
-            : option?.animation_pause ?? ANIMATION.PAUSE;
-        option["text_color"] =
-          eventName === "text_color"
-            ? eventValue
-            : option?.text_color ?? option.preview_box?.text_color ?? "black";
-
-        text += Object.entries(option)
-          .filter((o) => allowedOptions.includes(o[0]))
-          .map((o) => o.join(": "))
-          .join("; ");
-        text += "\n\n";
+        if (Object.keys(option).length >= 5) {
+          option["text"] =
+            option?.text ?? option.input.split(";")[0].split(": ")[1];
+          option["animation"] =
+            eventName === "animation"
+              ? eventValue
+              : option?.animation ?? ANIMATION.STYLE.BOUNCE;
+          option["animation_duration"] =
+            eventName === "animation_duration"
+              ? +eventValue
+              : option?.animation_duration ?? ANIMATION.DURATION;
+          option["animation_pause"] =
+            eventName === "animation_pause"
+              ? +eventValue
+              : option?.animation_pause ?? ANIMATION.PAUSE;
+          option["text_color"] =
+            eventName === "text_color"
+              ? eventValue
+              : option?.text_color ?? option.preview_box?.text_color ?? "black";
+          text += Object.entries(option)
+            .filter((o) => allowedOptions.includes(o[0]))
+            .map((o) => o.join(": "))
+            .join("; ");
+          text += "\n\n";
+        } else {
+          text += option.join("\n") + "\n\n";
+        }
       });
 
       formData.value.input = text;
@@ -596,15 +618,71 @@ function updateInput(data, eventTarget) {
   }, 10);
 }
 
+async function stringAnimateDelay(data, items, totalTime = 0) {
+  if (data.filter((d) => d?.length).length) {
+    const stringIndex = data.findIndex((d) => d?.length);
+    const subData = data.slice(0, stringIndex);
+    const subItems = items.slice(0, stringIndex);
+
+    totalTime += calcAnimationTime(subData);
+
+    animateToQueue(subItems);
+    setTimeout(() => {
+      stringAnimateDelay(data.slice(stringIndex + 1), items.slice(stringIndex));
+    }, totalTime);
+  } else {
+    await animateToQueue(items);
+  }
+}
+
+function calcAnimationTime(data) {
+  let totalTime = 0;
+  if (data?.length && typeof data !== "string") {
+    // we are dealing with an array of animations
+    data.forEach((animation) => {
+      if (animation?.length) {
+        return 0;
+      }
+      console.log(animation);
+      const numberOfAnimations =
+        (animation?.text
+          ? animation.text.split("%").length
+          : animation?.input.split("%").length - 1) / 2;
+      const tempTime =
+        (+animation?.animation_duration + +animation?.animation_pause) *
+        numberOfAnimations;
+
+      totalTime = tempTime > totalTime ? tempTime : totalTime;
+    });
+  } else if (data?.length === 0 || typeof data === "string") {
+    return totalTime;
+  } else {
+    // we just have one animation
+    const animationObject = data;
+    const numberOfAnimations =
+      (animationObject?.text
+        ? animationObject.text.split("%").length
+        : animationObject?.input.split("%").length - 1) / 2;
+    totalTime +=
+      (+animationObject?.animation_duration +
+        +animationObject?.animation_pause) *
+      numberOfAnimations;
+  }
+
+  return totalTime;
+}
+
 async function animateToQueue(items) {
   makePromise(async () => {
     if (previewElement.value) {
       // using forEach allows us to play each row at the same time
       // if we want to play them one after another, it would need to be a for loop
-      items.forEach(async (item, rowIndex) => {
+      items.forEach(async (item) => {
         const animation_pause = item.animation_pause;
         const elements = Array.from(
-          previewElement.value.querySelectorAll(`.row-${rowIndex} .invisible`)
+          previewElement.value.querySelectorAll(
+            `.textRow-${item?.index} .invisible`
+          )
         );
         if (
           item.animation.includes("off") ||
@@ -707,7 +785,7 @@ function getResults(item, rowIndex) {
     });
   }
 
-  return `<div class="row-${rowIndex}" style="color: ${
+  return `<div class="textRow-${rowIndex}" style="color: ${
     item?.text_color ?? "#000000"
   }"><div class="invisible">${str}</div></div>`;
 }
@@ -772,10 +850,7 @@ async function generateGif() {
   }
   if (type === "gif") {
     options.forEach((option) => {
-      const numberOfAnimations = (option?.text.split("%").length - 1) / 2;
-      gifLength +=
-        (+option?.animation_duration + +option?.animation_pause) *
-        numberOfAnimations;
+      gifLength += calcAnimationTime(option);
     });
   }
 

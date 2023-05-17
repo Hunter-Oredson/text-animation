@@ -2,7 +2,7 @@
   <div class="autocomplete">
     <input
       type="text"
-      class="w-500 rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+      class="w-full rounded-md bg-input border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
       @input="onChange"
       v-model="search"
       @keydown.tab="onArrowTab"
@@ -123,20 +123,17 @@ export default {
 </script>
 
 <style>
-.w-500 {
-  width: 500px;
-}
 .autocomplete {
   position: relative;
+  width: auto;
 }
 
 .autocomplete-results {
   padding: 0;
   margin: 0;
   border: 1px solid #eeeeee;
-  height: 120px;
+  height: auto;
   overflow: auto;
-  width: 500px;
 }
 
 .autocomplete-result {

@@ -159,6 +159,25 @@
                 <span>{{ item }}</span>
               </label>
             </div>
+            <u class="block mt-4">Other</u>
+            <div class="flex flex-wrap gap-3">
+              <label
+                v-for="(item, index) in animations.other"
+                :key="index"
+                class="flex items-center mt-1 border px-3 py-2 cursor-pointer rounded-md font-semibold"
+                :class="{ 'btn-selected': formData.animation === item }"
+              >
+                <input
+                  @click="handleFormUpdate"
+                  type="radio"
+                  name="animation"
+                  class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  v-model="formData.animation"
+                  :value="item"
+                />
+                <span>{{ item }}</span>
+              </label>
+            </div>
             <div>
               <label class="block mt-4">
                 <span class="block">Animation Duration (ms):</span>
@@ -266,6 +285,10 @@
               first bracket. <br />(i.e. &#60;font-size: 24pt;&#62; big text
               &#60;/&#62;)
             </li>
+            <li>
+              The Morph animation will change the first thing in %%'s with the
+              second, third, and fourth things in %%'s. Example text: %🦆%%🐻%
+            </li>
           </ul>
         </div>
       </div>
@@ -314,7 +337,7 @@ import {
 } from "./config/default.config";
 import { generateDownloadable } from "./downloader";
 import { allTemplates } from "./templates";
-import { resizeText } from "./helper";
+import { resizeText, wait } from "./helper";
 import background_1 from "./assets/scenes/two_conversation_1.gif";
 import background_2 from "./assets/scenes/two_conversation_2.gif";
 import bubble_1 from "./assets/bubbles/bubble_1.png";
@@ -692,15 +715,24 @@ async function animateToQueue(items) {
             element.className = "";
           });
         }
+        const morphingArray = [];
         for (let index = 0; index < elements.length; index++) {
           const element = elements[index];
           if (index === 0) {
             element.className = "";
           } else {
-            await makePromise(() => {
-              toAnimate(element, item);
-            }, animation_pause);
+            if (item.animation === "morph") {
+              morphingArray.push(element);
+            } else {
+              await makePromise(() => {
+                toAnimate(element, item);
+              }, animation_pause);
+            }
           }
+        }
+
+        if (morphingArray.length) {
+          animateMorph(morphingArray, item);
         }
       });
     }
@@ -753,18 +785,29 @@ function getResults(item, rowIndex) {
         `<span class="invisible" style="${number_2_style}">${number_2}</span>`
       );
     }
+    if (item.animation === "morph") {
+    }
   }
   // number_1 = number_1 ? number_1 : DEFAULT_GRID[0]
   // number_2 = number_2 ? number_2 : DEFAULT_GRID[1]
   if (!number_1 || !number_2) {
     const regex_within_percentage = /\%(.*?)\%/gm;
+    let index = 0;
     while ((m = regex_within_percentage.exec(str)) !== null) {
       if (m.index === regex_within_percentage.lastIndex)
         regex_within_percentage.lastIndex++;
-      str = str.replaceAll(
-        m[0],
-        `<span class="invisible" style="${number_2_style}">${m[1]}</span>`
-      );
+      if (item.animation === "morph") {
+        str = str.replaceAll(
+          m[0],
+          `<span class="morphin-time"><span class="invisible" style="${number_2_style}">${m[1]}</span></span>`
+        );
+      } else {
+        str = str.replaceAll(
+          m[0],
+          `<span class="invisible" style="${number_2_style}">${m[1]}</span>`
+        );
+      }
+      index++;
     }
   }
 
@@ -793,6 +836,29 @@ function getResults(item, rowIndex) {
 function toAnimate(element, item) {
   let elementClasses = ["animate", "animate-" + item?.animation?.toLowerCase()];
   element.className = elementClasses.join(" ");
+}
+
+async function animateMorph(morphingArray, item) {
+  const morphingItems = Array.from(
+    previewElement.value.querySelectorAll(`.morphin-time`)
+  );
+  const textContent = [];
+  morphingItems.forEach((m, i) => {
+    if (i === 0) {
+      morphingArray.forEach((mA, j) => {
+        mA.classList.remove("invisible");
+        textContent.push(mA.textContent);
+      });
+    } else {
+      m.remove();
+    }
+  });
+
+  for (let i = 0; i < textContent.length; i++) {
+    await wait(+item.animation_pause);
+    morphingItems[0].textContent = textContent[i];
+    await wait(+item.animation_duration);
+  }
 }
 
 function onFileUpload(e) {

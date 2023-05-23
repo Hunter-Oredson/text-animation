@@ -28,6 +28,7 @@ export const animations = {
     "scale-off",
     "swing-off",
   ],
+  other: ["morph"],
 };
 export const outputs = ["Text", "Conversation"];
 export const scenes = ["man_and_women", "monkey_and_lion"];

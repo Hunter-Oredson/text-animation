@@ -854,8 +854,8 @@ async function animateMorph(morphingArray, item) {
     }
   });
 
+  await wait(+item.animation_pause);
   for (let i = 0; i < textContent.length; i++) {
-    await wait(+item.animation_pause);
     morphingItems[0].textContent = textContent[i];
     await wait(+item.animation_duration);
   }

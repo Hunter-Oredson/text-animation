@@ -785,8 +785,13 @@ function getResults(item, rowIndex) {
         `<span class="invisible" style="${number_2_style}">${number_2}</span>`
       );
     }
-    if (item.animation === "morph") {
-    }
+  }
+
+  const regex_within_tags = /\<(.*?)\>(.*?)\<\/\>/gm;
+  while ((m = regex_within_tags.exec(str)) !== null) {
+    if (m.index === regex_within_tags.lastIndex) regex_within_tags.lastIndex++;
+    let style = m[1].replaceAll("=", ":");
+    str = str.replaceAll(m[0], `<span style="${style}">${m[2]}</span>`);
   }
   // number_1 = number_1 ? number_1 : DEFAULT_GRID[0]
   // number_2 = number_2 ? number_2 : DEFAULT_GRID[1]
@@ -809,13 +814,6 @@ function getResults(item, rowIndex) {
       }
       index++;
     }
-  }
-
-  const regex_within_tags = /\<(.*?)\>(.*?)\<\/\>/gm;
-  while ((m = regex_within_tags.exec(str)) !== null) {
-    if (m.index === regex_within_tags.lastIndex) regex_within_tags.lastIndex++;
-    let style = m[1].replaceAll("=", ":");
-    str = str.replaceAll(m[0], `<span style="${style}">${m[2]}</span>`);
   }
 
   if (item.animation_type == OUTPUTS.OBJECT) {

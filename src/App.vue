@@ -789,9 +789,10 @@ function getResults(item, rowIndex) {
 
   const regex_within_tags = /\<(.*?)\>(.*?)\<\/\>/gm;
   while ((m = regex_within_tags.exec(str)) !== null) {
-    if (m.index === regex_within_tags.lastIndex) regex_within_tags.lastIndex++;
     let style = m[1].replaceAll("=", ":");
-    str = str.replaceAll(m[0], `<span style="${style}">${m[2]}</span>`);
+    const stringToInsert = `<span style="${style}">${m[2]}</span>`;
+    regex_within_tags.lastIndex = +stringToInsert.length;
+    str = str.replaceAll(m[0], stringToInsert);
   }
   // number_1 = number_1 ? number_1 : DEFAULT_GRID[0]
   // number_2 = number_2 ? number_2 : DEFAULT_GRID[1]
@@ -841,9 +842,14 @@ async function animateMorph(morphingArray, item) {
     previewElement.value.querySelectorAll(`.morphin-time`)
   );
   const textContent = [];
+  const styles = [];
   morphingItems.forEach((m, i) => {
     if (i === 0) {
       morphingArray.forEach((mA, j) => {
+        const str = mA.innerHTML;
+        const styleRegex = /style="(.*?)"/;
+        styles.push(styleRegex.exec(str)[1]);
+
         mA.classList.remove("invisible");
         textContent.push(mA.textContent);
       });
@@ -855,6 +861,7 @@ async function animateMorph(morphingArray, item) {
   await wait(+item.animation_pause);
   for (let i = 0; i < textContent.length; i++) {
     morphingItems[0].textContent = textContent[i];
+    morphingItems[0].style = styles[i];
     await wait(+item.animation_duration);
   }
 }

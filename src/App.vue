@@ -848,7 +848,8 @@ async function animateMorph(morphingArray, item) {
       morphingArray.forEach((mA, j) => {
         const str = mA.innerHTML;
         const styleRegex = /style="(.*?)"/;
-        styles.push(styleRegex.exec(str)[1]);
+        const result = styleRegex.exec(str);
+        if (result) styles.push(result[1]);
 
         mA.classList.remove("invisible");
         textContent.push(mA.textContent);

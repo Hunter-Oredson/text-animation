@@ -269,11 +269,8 @@
               ✖️🟰➗➖ ≈ π •
             </li>
             <li>
-              To add an emoji (🐈🐶🔵) on a Windows computer, press Win + ;
-            </li>
-            <li>
               To add an emoji (🐈🐶🔵) on a Mac computer, press Command +
-              Control + Space
+              Control + Space. On a Windows computer, press Win + ;
             </li>
             <li>
               You can add multiple lines of text in a single ‘row’ of text
@@ -284,6 +281,10 @@
               (&#60;&#62; and &#60;/&#62;) and typing a style attribute in the
               first bracket. <br />(i.e. &#60;font-size: 24pt;&#62; big text
               &#60;/&#62;)
+            </li>
+            <li>
+              You can color text like this: 123&#60;color:
+              green&#62;456&#60;/&#62;789
             </li>
             <li>
               The Morph animation will change the first thing in %%'s with the
@@ -609,7 +610,7 @@ function updateInput(data, eventTarget) {
       options.forEach((option) => {
         if (Object.keys(option).length >= 5) {
           option["text"] =
-            option?.text ?? option.input.split(";")[0].split(": ")[1];
+            option?.text ?? option.input.split(";")[0].split(": ")[1]; // could maybe use regex instead of this so there can be more than one inline style or we use commas to seperate them instead of ';'
           option["animation"] =
             eventName === "animation"
               ? eventValue
@@ -864,6 +865,11 @@ async function animateMorph(morphingArray, item) {
     morphingItems[0].textContent = textContent[i];
     morphingItems[0].style = styles[i];
     await wait(+item.animation_duration);
+    if (i + 1 < textContent.length) {
+      morphingItems[0].classList.toggle("fade");
+      await wait(250);
+      morphingItems[0].classList.toggle("fade");
+    }
   }
 }
 

@@ -34,6 +34,15 @@ body {
   color: white;
 }
 
+.morphin-time {
+  opacity: 1;
+  transition: opacity 0.25s;
+}
+
+.fade {
+  opacity: 0;
+}
+
 .group-title {
   font-size: 18px;
   font-weight: bold;

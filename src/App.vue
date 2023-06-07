@@ -933,7 +933,8 @@ async function generateGif() {
   }
   if (type === "gif") {
     options.forEach((option) => {
-      gifLength += calcAnimationTime(option);
+      let tempLength = calcAnimationTime(option);
+      gifLength = gifLength > tempLength ? gifLength : tempLength;
     });
   }
 

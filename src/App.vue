@@ -799,14 +799,13 @@ function getResults(item, rowIndex) {
   // number_2 = number_2 ? number_2 : DEFAULT_GRID[1]
   if (!number_1 || !number_2) {
     const regex_within_percentage = /\%(.*?)\%/gm;
-    let index = 0;
     while ((m = regex_within_percentage.exec(str)) !== null) {
       if (m.index === regex_within_percentage.lastIndex)
         regex_within_percentage.lastIndex++;
       if (item.animation === "morph") {
         str = str.replaceAll(
           m[0],
-          `<span class="morphin-time"><span class="invisible" style="${number_2_style}">${m[1]}</span></span>`
+          `<span class="morphin-time" id="${rowIndex}"><span class="invisible" style="${number_2_style}">${m[1]}</span></span>`
         );
       } else {
         str = str.replaceAll(
@@ -814,7 +813,6 @@ function getResults(item, rowIndex) {
           `<span class="invisible" style="${number_2_style}">${m[1]}</span>`
         );
       }
-      index++;
     }
   }
 
@@ -844,31 +842,38 @@ async function animateMorph(morphingArray, item) {
   );
   const textContent = [];
   const styles = [];
-  morphingItems.forEach((m, i) => {
-    if (i === 0) {
-      morphingArray.forEach((mA, j) => {
-        const str = mA.innerHTML;
-        const styleRegex = /style="(.*?)"/;
-        const result = styleRegex.exec(str);
-        if (result) styles.push(result[1]);
+  let isNewRow = true;
+  let currentRow = 0;
 
-        mA.classList.remove("invisible");
-        textContent.push(mA.textContent);
-      });
-    } else {
-      m.remove();
+  morphingItems.forEach((m, i) => {
+    if (item?.index == m.id) {
+      currentRow = item.index;
+      if (isNewRow) {
+        isNewRow = false;
+        morphingArray.forEach((mA, j) => {
+          const str = mA.innerHTML;
+          const styleRegex = /style="(.*?)"/;
+          const result = styleRegex.exec(str);
+          if (result) styles.push(result[1]);
+
+          mA.classList.remove("invisible");
+          textContent.push(mA.textContent);
+        });
+      } else {
+        m.remove();
+      }
     }
   });
 
   await wait(+item.animation_pause);
   for (let i = 0; i < textContent.length; i++) {
-    morphingItems[0].textContent = textContent[i];
-    morphingItems[0].style = styles[i];
+    morphingItems[currentRow].textContent = textContent[i];
+    morphingItems[currentRow].style = styles[i];
     await wait(+item.animation_duration);
     if (i + 1 < textContent.length) {
-      morphingItems[0].classList.toggle("fade");
+      morphingItems[currentRow].classList.toggle("fade");
       await wait(250);
-      morphingItems[0].classList.toggle("fade");
+      morphingItems[currentRow].classList.toggle("fade");
     }
   }
 }

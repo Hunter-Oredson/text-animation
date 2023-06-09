@@ -940,7 +940,7 @@ async function generateGif() {
     gifLength = 500;
   }
   if (type === "gif") {
-    gifLength = calcAnimationTime(options);
+    gifLength = calcAnimationTime(options) + 1000;
   }
 
   await GenerateAnimation();

@@ -663,21 +663,29 @@ function calcAnimationTime(data) {
   let totalTime = 0;
   if (data?.length && typeof data !== "string") {
     // we are dealing with an array of animations
+    let rowTime = 0;
     data.forEach((animation) => {
       if (animation?.length) {
+        totalTime += rowTime;
+        rowTime = 0;
         return 0;
       }
-      console.log(animation);
-      const numberOfAnimations =
+      const animationPause = +animation?.animation_pause;
+      let animationDuration = +animation?.animation_duration;
+      const numberOfAnimations = Math.floor(
         (animation?.text
           ? animation.text.split("%").length
-          : animation?.input.split("%").length - 1) / 2;
+          : animation?.input.split("%").length - 1) / 2
+      );
+      if (animation?.animation === "dance") {
+        animationDuration *= 4;
+      }
       const tempTime =
-        (+animation?.animation_duration + +animation?.animation_pause) *
-        numberOfAnimations;
+        (animationDuration + animationPause) * numberOfAnimations;
 
-      totalTime = tempTime > totalTime ? tempTime : totalTime;
+      rowTime = tempTime > rowTime ? tempTime : rowTime;
     });
+    totalTime += rowTime;
   } else if (data?.length === 0 || typeof data === "string") {
     return totalTime;
   } else {
@@ -932,10 +940,7 @@ async function generateGif() {
     gifLength = 500;
   }
   if (type === "gif") {
-    options.forEach((option) => {
-      let tempLength = calcAnimationTime(option);
-      gifLength = gifLength > tempLength ? gifLength : tempLength;
-    });
+    gifLength = calcAnimationTime(options);
   }
 
   await GenerateAnimation();

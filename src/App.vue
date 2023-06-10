@@ -431,6 +431,7 @@ async function makeAnimation(csvData, eventTarget) {
       const OUTPUTS_OBJECT = OUTPUTS.OBJECT.split(" ")[0]?.toLowerCase();
       const items = [];
       let itemsHtml = "";
+      let morphIndex = 0;
       for (let rowIndex = 0; rowIndex < csvData.length; rowIndex++) {
         const row = csvData[rowIndex];
         if (row?.length) {
@@ -460,6 +461,7 @@ async function makeAnimation(csvData, eventTarget) {
           };
           item.result = getResults(item, rowIndex);
           item.index = rowIndex;
+          if (row?.animation === "morph") item.morphIndex = morphIndex++;
           itemsHtml += item.result;
           items.push(item);
         }
@@ -648,7 +650,7 @@ async function stringAnimateDelay(data, items, totalTime = 0) {
     const subData = data.slice(0, stringIndex);
     const subItems = items.slice(0, stringIndex);
 
-    totalTime += calcAnimationTime(subData);
+    totalTime += await calcAnimationTime(subData);
 
     animateToQueue(subItems);
     setTimeout(() => {
@@ -678,12 +680,17 @@ function calcAnimationTime(data) {
           : animation?.input.split("%").length - 1) / 2
       );
       if (animation?.animation === "dance") {
-        animationDuration *= 4;
+        animationDuration *= 2;
       }
-      const tempTime =
-        (animationDuration + animationPause) * numberOfAnimations;
-
-      rowTime = tempTime > rowTime ? tempTime : rowTime;
+      if (animation?.animation === "morph") {
+        const tempTime =
+          animationDuration * numberOfAnimations + animationPause;
+        rowTime = tempTime > rowTime ? tempTime : rowTime;
+      } else {
+        const tempTime =
+          animationPause * numberOfAnimations + animationDuration;
+        rowTime = tempTime > rowTime ? tempTime : rowTime;
+      }
     });
     totalTime += rowTime;
   } else if (data?.length === 0 || typeof data === "string") {
@@ -855,7 +862,7 @@ async function animateMorph(morphingArray, item) {
 
   morphingItems.forEach((m, i) => {
     if (item?.index == m.id) {
-      currentRow = item.index;
+      currentRow = item.morphIndex;
       if (isNewRow) {
         isNewRow = false;
         morphingArray.forEach((mA, j) => {

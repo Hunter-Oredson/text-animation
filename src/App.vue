@@ -21,7 +21,6 @@
             <span>Chat GPT Search:</span>
             <textarea
               rows="1"
-              @change="handleInputChange"
               type="text"
               class="mt-1 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             >
@@ -31,7 +30,7 @@
             type="button"
             class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
             value="Generate using chat"
-            @click="GenerateAnimation()"
+            @click="testPrompt()"
           />
         </div>
 
@@ -363,6 +362,7 @@ import background_2 from "./assets/scenes/two_conversation_2.gif";
 import bubble_1 from "./assets/bubbles/bubble_1.png";
 import bubble_2 from "./assets/bubbles/bubble_2.png";
 import SearchAutocomplete from "./SearchAutocomplete.vue";
+import { testPrompt } from "./openAi";
 
 const formData = ref({
   isImportFromCsv: false,

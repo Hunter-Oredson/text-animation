@@ -16,6 +16,25 @@
             <span>Import from CSV</span>
           </label>
         </div> -->
+        <div>
+          <label class="block mt-3">
+            <span>Chat GPT Search:</span>
+            <textarea
+              rows="1"
+              @change="handleInputChange"
+              type="text"
+              class="mt-1 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            >
+            </textarea>
+          </label>
+          <input
+            type="button"
+            class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
+            value="Generate using chat"
+            @click="GenerateAnimation()"
+          />
+        </div>
+
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
             <span>Template Search:</span>

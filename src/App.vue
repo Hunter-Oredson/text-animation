@@ -29,7 +29,7 @@
           <input
             type="button"
             class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
-            value="Generate using chat"
+            value="Animate with AI"
             @click="testPrompt()"
           />
         </div>

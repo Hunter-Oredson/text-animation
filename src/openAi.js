@@ -1,7 +1,4 @@
-import { OpenAIApi } from "openai";
-// const api = new OpenAIApi(
-//   "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"
-// );
+import { allTemplates } from "./templates";
 const apiKey = "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";
 
 export async function apiValid() {
@@ -28,13 +25,32 @@ export async function apiValid() {
     });
 }
 
-//test prompt
-export async function testPrompt() {
+export async function selectPrompt() {
   console.log("hit testPrompt");
-
-  const prompt = "What is the meaning of life?";
   const url = "https://api.openai.com/v1/chat/completions";
 
+  const prompt =
+    "Advanced double digit subtraction (21 - 17) using 2 and 12 and 8";
+
+  const titles = allTemplates.map((item) => item.title);
+  const stringTemplatesTitles = titles.join(", ");
+
+  const userMessage =
+    "help me choose the template best suited for this prompt and only return the template name and no other text" +
+    " prompt: " +
+    prompt +
+    " template: " +
+    stringTemplatesTitles;
+  console.log(userMessage);
+
+  // Prepare conversation history with user message and templates
+  const conversation = [
+    { role: "system", content: "You are the user." },
+    {
+      role: "user",
+      content: userMessage,
+    },
+  ];
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${apiKey}`,
@@ -42,10 +58,7 @@ export async function testPrompt() {
 
   const requestBody = {
     model: "gpt-3.5-turbo",
-    messages: [
-      { role: "system", content: "You are a helpful assistant." },
-      { role: "user", content: prompt },
-    ],
+    messages: conversation,
   };
 
   fetch(url, {
@@ -56,8 +69,8 @@ export async function testPrompt() {
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
-      //   const reply = data.choices[0].message.content;
-      //   console.log(reply);
+      const reply = data.choices[0].message.content;
+      console.log(reply);
     })
     .catch((error) => {
       console.error("Error:", error);

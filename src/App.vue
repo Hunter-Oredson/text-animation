@@ -13,28 +13,26 @@
           </label>
           <label class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.isImportFromCsv === true }">
             <input type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @click="() => formData.isImportFromCsv = true">
-            <span>Import from CSV</span>
+            <sformData.promptconst pan>Import from CSV</span>
           </label>
         </div> -->
-        <div>
+
+        <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
             <span>Chat GPT Search:</span>
-            <textarea
-              rows="1"
+            <input
               type="text"
               class="mt-1 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-            </textarea>
+              v-model="formData.prompt"
+              placeholder="Advanced double digit subtraction (21 - 17) using 2 and 12 and 8"
+            />
           </label>
           <input
             type="button"
             class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
             value="Animate with AI"
-            @click="selectPrompt()"
+            @click="selectTemplate()"
           />
-        </div>
-
-        <div v-if="!formData.isImportFromCsv">
           <!-- <label class="block mt-3">
             <span>Template Search:</span>
             <SearchAutocomplete
@@ -362,7 +360,7 @@ import background_2 from "./assets/scenes/two_conversation_2.gif";
 import bubble_1 from "./assets/bubbles/bubble_1.png";
 import bubble_2 from "./assets/bubbles/bubble_2.png";
 import SearchAutocomplete from "./SearchAutocomplete.vue";
-import { selectPrompt } from "./openAi";
+import { aiSelectPrompt } from "./openAi";
 
 const formData = ref({
   isImportFromCsv: false,
@@ -381,6 +379,7 @@ const formData = ref({
   result: "",
   template: "",
   search: ANIMATION.INPUT,
+  prompt: "",
 });
 
 const previewElement = ref(null);
@@ -985,5 +984,23 @@ function getMultilines() {
     .split("\n\n")
     .filter((line) => /\w/.test(line)) // removes any empty lines
     .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
+}
+
+// the function of this code is to ai to help select a relevant template -SueAnn Van Valkenburg
+function selectTemplate() {
+  const userPrompt = this.formData.prompt;
+  console.log("Prompt Text:", userPrompt);
+
+  if (userPrompt != "") {
+    var templateTitle = aiSelectPrompt(userPrompt);
+    console.log(templateTitle);
+  } else {
+    this.formData.prompt = "Required";
+  }
+
+  //call aiSelectPrompt
+  //pass in prompt and returns title
+  //make func to seach for title and returns text
+  //take that text and set it equal to formData
 }
 </script>

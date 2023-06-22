@@ -25,12 +25,12 @@ export async function apiValid() {
     });
 }
 
-export async function selectPrompt() {
-  console.log("hit testPrompt");
+export async function aiSelectPrompt(prompt) {
+  console.log("hit aiSelectPrompt");
   const url = "https://api.openai.com/v1/chat/completions";
 
-  const prompt =
-    "Advanced double digit subtraction (21 - 17) using 2 and 12 and 8";
+  // const prompt =
+  //   "Advanced double digit subtraction (21 - 17) using 2 and 12 and 8";
 
   const titles = allTemplates.map((item) => item.title);
   const stringTemplatesTitles = titles.join(", ");
@@ -71,6 +71,7 @@ export async function selectPrompt() {
       console.log(data);
       const reply = data.choices[0].message.content;
       console.log(reply);
+      return reply;
     })
     .catch((error) => {
       console.error("Error:", error);

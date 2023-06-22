@@ -30,12 +30,12 @@
             type="button"
             class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
             value="Animate with AI"
-            @click="testPrompt()"
+            @click="selectPrompt()"
           />
         </div>
 
         <div v-if="!formData.isImportFromCsv">
-          <label class="block mt-3">
+          <!-- <label class="block mt-3">
             <span>Template Search:</span>
             <SearchAutocomplete
               :items="allTemplates.map((template) => template.title)"
@@ -43,7 +43,7 @@
               @keyup.enter="handleTemplate($event.target.value)"
               v-model="formData.search"
             />
-          </label>
+          </label> -->
 
           <label class="block mt-3">
             <span>Input Text:</span>
@@ -362,7 +362,7 @@ import background_2 from "./assets/scenes/two_conversation_2.gif";
 import bubble_1 from "./assets/bubbles/bubble_1.png";
 import bubble_2 from "./assets/bubbles/bubble_2.png";
 import SearchAutocomplete from "./SearchAutocomplete.vue";
-import { testPrompt } from "./openAi";
+import { selectPrompt } from "./openAi";
 
 const formData = ref({
   isImportFromCsv: false,

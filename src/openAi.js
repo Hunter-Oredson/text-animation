@@ -1,8 +1,6 @@
 import { allTemplates } from "./templates";
-const apiKey = "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";
 
 export async function aiSelectTemplate(prompt) {
-  console.log("hit aiSelectTemplate");
   const url = "https://api.openai.com/v1/chat/completions";
 
   let templateTitle = "";
@@ -27,7 +25,7 @@ export async function aiSelectTemplate(prompt) {
   ];
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${apiKey}`,
+    Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
   };
 
   const requestBody = {
@@ -62,7 +60,7 @@ export async function apiValid() {
 
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${apiKey}`,
+    Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
   };
 
   fetch(url, {

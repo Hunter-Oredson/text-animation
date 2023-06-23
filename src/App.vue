@@ -13,7 +13,7 @@
           </label>
           <label class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.isImportFromCsv === true }">
             <input type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @click="() => formData.isImportFromCsv = true">
-            <sformData.promptconst pan>Import from CSV</span>
+            <span>Import from CSV</span>
           </label>
         </div> -->
 
@@ -1007,8 +1007,3 @@ async function selectTemplate() {
   }
 }
 </script>
-<style>
-.error-outline {
-  border-color: red;
-}
-</style>

@@ -29,6 +29,8 @@ export async function aiSelectPrompt(prompt) {
   console.log("hit aiSelectPrompt");
   const url = "https://api.openai.com/v1/chat/completions";
 
+  let templateTitle = "";
+
   // const prompt =
   //   "Advanced double digit subtraction (21 - 17) using 2 and 12 and 8";
 
@@ -61,19 +63,19 @@ export async function aiSelectPrompt(prompt) {
     messages: conversation,
   };
 
-  fetch(url, {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(requestBody),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      const reply = data.choices[0].message.content;
-      console.log(reply);
-      return reply;
-    })
-    .catch((error) => {
-      console.error("Error:", error);
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(requestBody),
     });
+    const data = await response.json();
+    console.log(data);
+    const reply = data.choices[0].message.content;
+    console.log(reply);
+    return reply; // Return the 'reply' value
+  } catch (error) {
+    console.error("Error:", error);
+    throw error; // Throw the 'error' to be caught by the caller
+  }
 }

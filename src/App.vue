@@ -361,7 +361,7 @@ import background_2 from "./assets/scenes/two_conversation_2.gif";
 import bubble_1 from "./assets/bubbles/bubble_1.png";
 import bubble_2 from "./assets/bubbles/bubble_2.png";
 import SearchAutocomplete from "./SearchAutocomplete.vue";
-import { aiSelectPrompt } from "./openAi";
+import { aiSelectTemplate, apiValid } from "./openAi";
 
 const formData = ref({
   isImportFromCsv: false,
@@ -992,22 +992,19 @@ function getMultilines() {
 async function selectTemplate() {
   const userPrompt = this.formData.prompt;
   console.log("Prompt Text:", userPrompt);
-  //call aiSelectPrompt
-  //pass in prompt and returns title
   try {
     if (userPrompt != "") {
       this.inputError = false;
-      const templateTitle = await aiSelectPrompt(userPrompt);
-      console.log(`templateTitle : ${templateTitle}`);
+      const selectedTemplateText = await aiSelectTemplate(userPrompt);
+      console.log(`template : ${selectedTemplateText}`);
+
+      this.formData.input = selectedTemplateText;
     } else {
       this.inputError = true;
     }
   } catch (error) {
     console.error("Error:", error);
   }
-
-  //make func to seach for title and returns text
-  //take that text and set it equal to formData
 }
 </script>
 <style>

@@ -23,6 +23,7 @@
             <input
               type="text"
               class="mt-1 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              :class="{ 'error-outline': inputError }"
               v-model="formData.prompt"
               placeholder="Advanced double digit subtraction (21 - 17) using 2 and 12 and 8"
             />
@@ -387,6 +388,7 @@ const csvRowData = ref([]);
 const csvRowDataKeys = ref([]);
 const csvFileName = ref("");
 const downloadReady = ref(false);
+const inputError = ref(false);
 
 watchEffect(() => {
   updateText();
@@ -987,20 +989,29 @@ function getMultilines() {
 }
 
 // the function of this code is to ai to help select a relevant template -SueAnn Van Valkenburg
-function selectTemplate() {
+async function selectTemplate() {
   const userPrompt = this.formData.prompt;
   console.log("Prompt Text:", userPrompt);
-
-  if (userPrompt != "") {
-    var templateTitle = aiSelectPrompt(userPrompt);
-    console.log(templateTitle);
-  } else {
-    this.formData.prompt = "Required";
-  }
-
   //call aiSelectPrompt
   //pass in prompt and returns title
+  try {
+    if (userPrompt != "") {
+      this.inputError = false;
+      const templateTitle = await aiSelectPrompt(userPrompt);
+      console.log(`templateTitle : ${templateTitle}`);
+    } else {
+      this.inputError = true;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+
   //make func to seach for title and returns text
   //take that text and set it equal to formData
 }
 </script>
+<style>
+.error-outline {
+  border-color: red;
+}
+</style>

@@ -538,7 +538,7 @@ text:   % 👆%; animation_type: text; animation: swing; animation_duration: 600
 
 text:    % 3️⃣%; animation_type: text; animation: swing; animation_duration: 600; animation_pause: 1500; text_color: #292626`;
 
-export const sumOfOfTheInteriorAnglesInAPolygonWithNSides =
+export const sumOfTheInteriorAnglesInAPolygonWithNSides =
   () => `text: 🔺        180 ✖️ (%<color:#9A2617>3</>%-2); animation_type: text; animation: spin; animation_duration: 700; animation_pause: 200; text_color: #292626
 
 text: 🟥        180 ✖️ (%<color:#9A2617>4</>%-2); animation_type: text; animation: spin; animation_duration: 700; animation_pause: 1000; text_color: #292626

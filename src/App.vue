@@ -16,8 +16,25 @@
             <span>Import from CSV</span>
           </label>
         </div> -->
+
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
+            <span>Chat GPT Search:</span>
+            <input
+              type="text"
+              class="mt-1 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              :class="{ 'error-outline': inputError }"
+              v-model="formData.prompt"
+              placeholder="Advanced double digit subtraction (21 - 17) using 2 and 12 and 8"
+            />
+          </label>
+          <input
+            type="button"
+            class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
+            value="Animate with AI"
+            @click="selectTemplate()"
+          />
+          <!-- <label class="block mt-3">
             <span>Template Search:</span>
             <SearchAutocomplete
               :items="allTemplates.map((template) => template.title)"
@@ -25,7 +42,7 @@
               @keyup.enter="handleTemplate($event.target.value)"
               v-model="formData.search"
             />
-          </label>
+          </label> -->
 
           <label class="block mt-3">
             <span>Input Text:</span>
@@ -344,6 +361,7 @@ import background_2 from "./assets/scenes/two_conversation_2.gif";
 import bubble_1 from "./assets/bubbles/bubble_1.png";
 import bubble_2 from "./assets/bubbles/bubble_2.png";
 import SearchAutocomplete from "./SearchAutocomplete.vue";
+import { aiSelectTemplate, apiValid } from "./openAi";
 
 const formData = ref({
   isImportFromCsv: false,
@@ -362,6 +380,7 @@ const formData = ref({
   result: "",
   template: "",
   search: ANIMATION.INPUT,
+  prompt: "",
 });
 
 const previewElement = ref(null);
@@ -369,6 +388,7 @@ const csvRowData = ref([]);
 const csvRowDataKeys = ref([]);
 const csvFileName = ref("");
 const downloadReady = ref(false);
+const inputError = ref(false);
 
 watchEffect(() => {
   updateText();
@@ -966,5 +986,24 @@ function getMultilines() {
     .split("\n\n")
     .filter((line) => /\w/.test(line)) // removes any empty lines
     .map((line) => line.replace(/\b\n+|\n+\b/g, ""));
+}
+
+// the function of this code is to ai to help select a relevant template -SueAnn Van Valkenburg
+async function selectTemplate() {
+  const userPrompt = this.formData.prompt;
+  console.log("Prompt Text:", userPrompt);
+  try {
+    if (userPrompt != "") {
+      this.inputError = false;
+      const selectedTemplateText = await aiSelectTemplate(userPrompt);
+      console.log(`template : ${selectedTemplateText}`);
+
+      this.formData.input = selectedTemplateText;
+    } else {
+      this.inputError = true;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
 }
 </script>

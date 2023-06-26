@@ -97,6 +97,10 @@ input[type="color"] {
   margin: 1em;
 }
 
+.error-outline {
+  border-color: red;
+}
+
 @keyframes blink {
   0%,
   50%,

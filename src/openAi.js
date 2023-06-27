@@ -39,7 +39,7 @@ export async function aiSelectTemplate(prompt) {
     console.log(`ai reply: ${reply}`);
 
     const index = allTemplates.findIndex(
-      (template) => template.title === reply
+      (template) => template.title.toLowerCase() === reply.toLowerCase()
     );
 
     if (index !== -1) {

@@ -34,7 +34,7 @@ export async function aiSelectTemplate(prompt) {
       body: JSON.stringify(requestBody),
     });
     const data = await response.json();
-    // console.log(data);
+    console.log(data);
     const reply = data.choices[0].message.content;
     console.log(`ai reply: ${reply}`);
 

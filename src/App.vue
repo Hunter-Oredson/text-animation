@@ -990,7 +990,7 @@ function getMultilines() {
 
 // the function of this code is to ai to help select a relevant template -SueAnn Van Valkenburg
 async function selectTemplate() {
-  const userPrompt = formData.prompt;
+  const userPrompt = formData.value.prompt;
   console.log("Prompt Text:", userPrompt);
   try {
     if (userPrompt && userPrompt != "") {

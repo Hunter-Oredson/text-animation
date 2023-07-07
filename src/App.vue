@@ -998,7 +998,7 @@ async function selectTemplate() {
       const selectedTemplateText = await aiSelectTemplate(userPrompt);
       console.log(`template : ${selectedTemplateText}`);
 
-      formData.input = selectedTemplateText;
+      formData.value.input = selectedTemplateText;
     } else {
       inputError.value = true;
     }

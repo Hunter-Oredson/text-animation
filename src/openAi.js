@@ -34,17 +34,17 @@ export async function aiSelectTemplate(prompt) {
       body: JSON.stringify(requestBody),
     });
     const data = await response.json();
-    console.log(data);
+    //console.log(data);
     const reply = data.choices[0].message.content;
-    console.log(`ai reply: ${reply}`);
+    //console.log(`ai reply: ${reply}`);
 
     const index = allTemplates.findIndex(
       (template) => template.title.toLowerCase() === reply.toLowerCase()
     );
 
     if (index !== -1) {
-      console.log(`valid index: ${index}`);
-      console.log(`template object: ${allTemplates[index].text}`);
+      //console.log(`valid index: ${index}`);
+      //console.log(`template object: ${allTemplates[index].text}`);
       return allTemplates[index].text;
     } else {
       console.log(`No template found`);

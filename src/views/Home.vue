@@ -1,48 +1,48 @@
 <template>
   <div class="container max-w-7xl px-3 md:px-12 py-24">
     <div class="grid md:grid-cols-2 gap-6">
-      <div class="text-lg font-semibold mb-3">Options</div>
+      <!-- <div class="text-lg font-semibold mb-3">Options</div> -->
       <div class="text-lg font-semibold mb-3">Preview</div>
     </div>
     <div class="grid md:grid-cols-2 gap-6">
       <div class="bg-container p-6 rounded-md md:h-full">
         <!-- <div class="flex flex-wrap gap-3">
-            <label class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.isImportFromCsv === false }">
-              <input type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @click="() => formData.isImportFromCsv = false">
-              <span>Text Input</span>
-            </label>
-            <label class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.isImportFromCsv === true }">
-              <input type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @click="() => formData.isImportFromCsv = true">
-              <span>Import from CSV</span>
-            </label>
-          </div> -->
+          <label
+            class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold"
+            :class="{ 'btn-selected': formData.isImportFromCsv === false }"
+          >
+            <input
+              type="radio"
+              name="animation"
+              class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              @click="() => (formData.isImportFromCsv = false)"
+            />
+            <span>Text Input</span>
+          </label>
+          <label
+            class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold"
+            :class="{ 'btn-selected': formData.isImportFromCsv === true }"
+          >
+            <input
+              type="radio"
+              name="animation"
+              class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              @click="() => (formData.isImportFromCsv = true)"
+            />
+            <span>Import from CSV</span>
+          </label>
+        </div> -->
 
         <div v-if="!formData.isImportFromCsv">
           <label class="block mt-3">
-            <span>Chat GPT Search:</span>
-            <input
-              type="text"
-              class="mt-1 block w-full bg-input rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              :class="{ 'error-outline': inputError }"
-              v-model="formData.prompt"
-              placeholder="Advanced double digit subtraction (21 - 17) using 2 and 12 and 8"
+            <span>Template Search:</span>
+            <SearchAutocomplete
+              :items="allTemplates.map((template) => template.title)"
+              @selected="handleTemplate($event)"
+              @keyup.enter="handleTemplate($event.target.value)"
+              v-model="formData.search"
             />
           </label>
-          <input
-            type="button"
-            class="mt-3 px-3 py-2 font-semibold rounded-md text-black bg-teal-600 hover:bg-teal-500 cursor-pointer transition"
-            value="Animate with AI"
-            @click="selectTemplate()"
-          />
-          <!-- <label class="block mt-3">
-              <span>Template Search:</span>
-              <SearchAutocomplete
-                :items="allTemplates.map((template) => template.title)"
-                @selected="handleTemplate($event)"
-                @keyup.enter="handleTemplate($event.target.value)"
-                v-model="formData.search"
-              />
-            </label> -->
 
           <label class="block mt-3">
             <span>Input Text:</span>

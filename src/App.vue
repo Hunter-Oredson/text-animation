@@ -361,7 +361,13 @@
       </table>
     </div> -->
     <footer>Email us at richkingsford@whiteboardGIFs.com</footer>
-    <footer>Ask about the ChatGPT version!</footer>
+    <footer>
+      <a
+        href="mailto:richkingsford@whiteboardGIFs.com?subject=Ask%20about%20the%20Chat%20GPT%20version"
+        style="color: #0d9488"
+        >Ask about the Chat GPT version!</a
+      >
+    </footer>
   </div>
 </template>
 

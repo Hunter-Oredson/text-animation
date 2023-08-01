@@ -1,7 +1,7 @@
 <template>
   <div class="container max-w-7xl px-3 md:px-12 py-12">
     <div class="flex items-center">
-      <img alt="logo" src="/../android-chrome-192x192.png" width="100px" />
+      <img alt="logo" src="../../android-chrome-192x192.png" width="100px" />
       <h1 class="text-3xl font-bold">WhiteboardGIFS.com</h1>
     </div>
     <p class="mb-6">

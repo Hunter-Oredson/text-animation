@@ -1,11 +1,24 @@
 <template>
-  <div class="container max-w-7xl px-3 md:px-12 py-24">
+  <div class="container max-w-7xl px-3 md:px-12 py-12">
+    <div class="flex items-center">
+      <img alt="logo" src="/../android-chrome-192x192.png" width="100px" />
+      <h1 class="text-3xl font-bold">WhiteboardGIFS.com</h1>
+    </div>
+    <p class="mb-6">
+      Create engaging, educational animations in seconds, little technical skill
+      required. Simplify learning and make it more interactive today. We're
+      especially good at Math, Programming, and Conversation animations.
+      <br />Try asking your students to create an animation!
+    </p>
     <div class="grid md:grid-cols-2 gap-6">
-      <!-- <div class="text-lg font-semibold mb-3">Options</div> -->
+      <div class="text-lg font-semibold mb-3">Options</div>
       <div class="text-lg font-semibold mb-3">Preview</div>
     </div>
     <div class="grid md:grid-cols-2 gap-6">
-      <div class="bg-container p-6 rounded-md md:h-full">
+      <div
+        class="bg-container p-6 rounded-md md:h-full"
+        style="margin-top: -12px"
+      >
         <!-- <div class="flex flex-wrap gap-3">
             <label class="flex items-center mt-3 border px-3 py-2 cursor-pointer rounded-md font-semibold" :class="{ 'btn-selected': formData.isImportFromCsv === false }">
               <input type="radio" name="animation" class="hidden form-radio border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @click="() => formData.isImportFromCsv = false">
@@ -302,8 +315,8 @@
       </div>
     </div>
   </div>
-  <div class="container mt-6 px-3 md:px-12">
-    <div v-if="formData.isImportFromCsv" class="mt-6">
+  <div class="container mb-6 px-3 md:px-12 text-center">
+    <!-- <div v-if="formData.isImportFromCsv" class="mt-6">
       <table class="border-collapse border border-slate-400">
         <thead>
           <tr>
@@ -328,7 +341,15 @@
           </tr>
         </tbody>
       </table>
-    </div>
+    </div> -->
+    <footer>Email us at richkingsford@whiteboardGIFs.com</footer>
+    <footer>
+      <a
+        href="mailto:richkingsford@whiteboardGIFs.com?subject=Ask%20about%20the%20Chat%20GPT%20version"
+        style="color: #0d9488"
+        >Ask about the Chat GPT version!</a
+      >
+    </footer>
   </div>
 </template>
 

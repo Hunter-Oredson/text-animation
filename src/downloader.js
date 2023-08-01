@@ -31,7 +31,7 @@ export async function generateDownloadable(duration, type) {
         ? {
             type: "mp4",
             mp4: mp4box,
-            interval: 25,
+            interval: 1000,
           }
         : {}
     );

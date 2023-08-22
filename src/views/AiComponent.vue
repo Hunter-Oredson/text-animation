@@ -8,8 +8,28 @@
       Create engaging, educational animations in seconds, little technical skill
       required. Simplify learning and make it more interactive today. We're
       especially good at Math, Programming, and Conversation animations.
-      <br />Try asking your students to create an animation!
+      <br /><br /><a
+        href="mailto:richkingsford@whiteboardGIFs.com?subject=Ask%20about%20the%20Chat%20GPT%20version"
+        >Ask about the Chat GPT version!</a
+      >
     </p>
+    <p>
+      <a
+        href="https://grapeassignments.com/link?title=Hints&key=Arithmetic&destination=hintGalleryPage"
+        >Arithmetic Hint Gallery</a
+      >
+      |
+      <a
+        href="https://grapeassignments.com/link?title=Hints&key=Calculus&destination=hintGalleryPage"
+        >Calculus Hint Gallery</a
+      >
+      |
+      <a
+        href="https://grapeassignments.com/link?title=Hints&key=Trigonometry&destination=hintGalleryPage"
+        >Trigonometry Hint Gallery</a
+      >
+    </p>
+    <br />
     <div class="grid md:grid-cols-2 gap-6">
       <div class="text-lg font-semibold mb-3">Options</div>
       <div class="text-lg font-semibold mb-3">Preview</div>
